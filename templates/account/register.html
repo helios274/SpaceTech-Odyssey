@@ -1,0 +1,44 @@
+{% extends '_base.html' %}
+{% load static %}
+
+{% block title %}
+Register to SpaceTech Odyssey
+{% endblock %}
+
+{% block css %}
+<link href="{% static 'css/forms.css' %}" rel="stylesheet">
+{% endblock %}
+
+{% block content %}
+{% include 'components/shared/navbar.html' with position='sticky-top' register_page='active' %}
+<div class="mlr-0.5 mlr-md-2 mlr-lg-3.5 mlr-xl-7 mb-4">
+    <h1 class="text-center">Join SpaceTech Odyssey</h1>
+    <div class="d-flex justify-content-center">
+        <form action="{% url 'register' %}" method="POST" class="d-flex flex-column auth-form" id="registerForm">
+            {% csrf_token %}
+            {% for field in form %}
+            <div class="form_control{% if field.errors %} errors{% endif %}">
+                {% if field.name != "password" %}
+                {{field.label_tag}}
+                {{field}}
+                {{field.errors}}
+                {% endif %}
+            </div>
+            {% endfor %}
+            <div class="form_control{% if form.password.errors %} errors{% endif %}">
+                {{form.password.label_tag}}
+                <div class="d-flex align-items-center">
+                    {{form.password}}
+                    <div class="eye" id="pwd-toggler"><i class="bi bi-eye-slash-fill" id="eye-icon"></i></div>
+                </div>
+                {{form.password.errors}}
+            </div>
+            <button type="submit" class="btn-submit mt-3">Register</button>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block js %}
+<script src="{% static 'js/register.js' %}"></script>
+{% endblock %}

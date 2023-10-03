@@ -1,0 +1,30 @@
+{% extends '_base.html' %}
+{% load static %}
+
+{% block title %}
+Search results
+{% endblock %}
+
+{% block css %}
+<link href="{% static 'css/posts.css' %}" rel="stylesheet">
+{% endblock %}
+
+{% block content %}
+{% include 'components/shared/navbar.html' with position='sticky-top' %}
+
+<div class="mlr-0.5 mlr-md-2 mlr-lg-3.5 mlr-xl-7 mb-4">
+    <h1 class="mt-2 head-text mb-3">Search results for "{{search_str}}"</h1>
+    <p>{{posts_count}} posts found</p>
+    <div class="row g-1 g-lg-3 g-xl-4">
+        {% for post in page_object %}
+        <div class="col-12 col-md-6">
+            {% include 'components/post-card.html' %}
+        </div>
+        {% endfor %}
+    </div>
+    {% if posts_count > 8 %}
+    {% include 'components/pagination.html' %}
+    {% endif %}
+</div>
+
+{% endblock %}

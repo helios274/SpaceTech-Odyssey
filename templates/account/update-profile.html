@@ -1,0 +1,43 @@
+{% extends '_base.html' %}
+{% load static %}
+
+{% block title %}
+Profile
+{% endblock %}
+
+{% block css %}
+<link href="{% static 'css/forms.css' %}" rel="stylesheet">
+<link href="{% static 'css/profile.css' %}" rel="stylesheet">
+{% endblock %}
+
+
+{% block content %}
+{% include 'components/shared/navbar.html' with position='sticky-top' update_profile='d-none' %}
+<div class="d-flex flex-column align-items-center mlr-0.5 mlr-md-2 mlr-lg-3.5 mlr-xl-7 mb-4">
+    <h1 class="text-center text-sm-start">Update Profile Data</h1>
+    <form action="{% url 'update-profile' request.user.id %}" method="POST" class="ms-2 profile-update-form"
+        enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="d-flex justify-content-center">
+            <img src="{% if request.user.profile_photo %}
+                {{request.user.profile_photo.url}}
+                {% else %}
+                {% static 'images/profile.png' %}
+                {% endif %}" alt="profile-photo" class="profile-picture" id="profilePicture" width="150px"
+                height="150px">
+        </div>
+        {% for field in form %}
+        <div class="form_control{% if field.errors %} errors{% endif %}">
+            {{field.label_tag}}
+            {{field}}
+            {{field.errors}}
+        </div>
+        {% endfor %}
+        <button type="submit" class="btn-submit mt-3">Update</button>
+    </form>
+</div>
+{% endblock %}
+
+{% block js %}
+<script src="{% static 'js/update-profile.js' %}"></script>
+{% endblock %}

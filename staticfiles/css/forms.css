@@ -1,0 +1,138 @@
+:root {
+  --bg-color: #ffffe0;
+  --primary-color: #00ad95;
+  --secondary-color: #bbe9e9;
+  --input-bg-color: #bbe9e97e;
+}
+
+.profile-update-form,
+.post-form,
+.auth-form {
+  max-width: 400px;
+  margin-top: 1.5rem;
+  padding: 1rem;
+  border-radius: 5px;
+  box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+}
+.auth-form {
+  width: 350px;
+}
+
+.form_control {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 0.6rem;
+}
+.form_control input {
+  height: 36px;
+}
+
+.form_control select,
+.form_control input[type="text"],
+.form_control input[type="email"],
+.form_control textarea,
+#id_password {
+  border-width: 1px;
+  border-style: solid;
+  border-color: var(--primary-color);
+  outline: 2px;
+  outline-style: hidden;
+  outline-color: var(--primary-color);
+  background-color: var(--input-bg-color);
+}
+.form_control select,
+.form_control input[type="text"]:not(#id_password),
+.form_control input[type="email"],
+.form_control textarea {
+  border-radius: 5px;
+}
+#id_password {
+  border-top-left-radius: 5px;
+  border-bottom-left-radius: 5px;
+}
+
+.form_control input:focus,
+.form_control textarea:focus,
+#id_password:focus {
+  outline-style: solid;
+}
+.eye {
+  cursor: pointer;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  padding: 0 0.5rem;
+  outline: 2px;
+  border-width: 1px !important;
+  border-top-right-radius: 5px !important;
+  border-bottom-right-radius: 5px !important;
+  border-color: var(--primary-color) !important;
+  background-color: var(--primary-color);
+  color: rgb(255, 255, 255);
+}
+
+.form_control input[type="file"] {
+  height: 36px;
+}
+.form_control input[type="file"]:focus,
+.form_control input[type="file"]:active {
+  border: none;
+  outline: none;
+}
+select[multiple] option:checked {
+  background-color: rgb(233, 217, 248); /* Change the background color */
+  color: rgb(0, 0, 0); /* Change the text color */
+  font-weight: bold; /* Add bold font weight */
+}
+.form_control label {
+  font-weight: 600;
+  margin-bottom: 1px;
+}
+
+.btn-submit {
+  height: 37px;
+  font-size: 18px;
+  font-weight: 500;
+  border: 2px solid var(--primary-color);
+  border-radius: 5px;
+  color: rgb(0, 0, 0);
+  outline: none;
+  transition-duration: 0.4s;
+}
+.btn-submit:hover,
+.btn-submit:active {
+  background-color: var(--primary-color);
+  color: white;
+}
+
+.errors .errorlist {
+  color: red;
+  list-style: none;
+  padding-left: 0;
+  margin-top: 1px;
+  margin-bottom: 0;
+}
+
+.errors input {
+  border-color: red;
+}
+.errors input:focus {
+  outline-style: solid;
+}
+
+.required {
+  color: red;
+}
+
+@media only screen and (max-width: 400px) {
+  form {
+    width: 100%;
+  }
+  .form_control input {
+    height: 29px;
+  }
+}
+
+#id_profile_photo {
+  border-color: blueviolet;
+}

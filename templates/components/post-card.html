@@ -1,0 +1,31 @@
+{% load static %}
+<div class="card h-100">
+    <div class="card-body">
+        <div class="d-flex flex-row align-items-center mb-1 mb-md-2">
+            <a href="{% url 'profile' post.user.id %}" class="d-flex post-link">
+                <img src="{% if post.user.profile_photo %}
+                    {{post.user.profile_photo.url}}
+                    {% else %}
+                    {% static 'images/profile.png' %}
+                    {% endif %}" alt="profile-photo" class="profile-picture" width="34px" height="34px">
+                {% if post.user.id == request.user.id %}
+                <h6 class="profile-name mt-2 ms-2">You</h6>
+                {% else %}
+                <h6 class="profile-name mt-2 ms-2">{{ post.user.get_full_name}}</h6>
+                {% endif %}
+            </a>
+            <h6 class="post-date ms-auto mt-2">{{ post.date_created|date:"M d, Y" }}</h6>
+        </div>
+        <a href="{% url 'post-details' post.slug %}" class="post-link">
+            <h5 class="card-title d-sm-block d-none">{{post.title}}</h5>
+            <h5 class="card-title d-sm-none d-block">{{post.title| truncatewords:9}}</h5>
+            <p class="card-text mb-1 d-sm-block d-none">{{post.content| truncatewords:25}}</p>
+            <p class="card-text mb-1 d-sm-none d-block">{{post.content| truncatewords:15}}</p>
+        </a>
+        <div class="d-flex">
+            {% for tag in post.tags.all %}
+            <a href="{% url 'tag' tag.slug %}" class="post-tag me-2">{{tag}}</a>
+            {% endfor %}
+        </div>
+    </div>
+</div>

@@ -1,0 +1,17 @@
+:root {
+  --primary-color: #00ad95;
+}
+.profile-container {
+  position: fixed;
+  z-index: 1020;
+}
+.profile-card {
+  border-radius: 10px;
+  box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+}
+@media only screen and (max-width: 767px) {
+  .profile-container {
+    position: static;
+    z-index: 0;
+  }
+}

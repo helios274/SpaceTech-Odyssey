@@ -1,0 +1,57 @@
+{% extends '_base.html' %}
+{% load static %}
+
+{% block title %}
+Profile
+{% endblock %}
+
+{% block css %}
+<link href="{% static 'css/posts.css' %}" rel="stylesheet">
+<link href="{% static 'css/profile.css' %}" rel="stylesheet">
+{% endblock %}
+
+
+{% block content %}
+{% include 'components/shared/navbar.html' with position='sticky-top' %}
+<div class="row mlr-0.5 mlr-md-2 mlr-lg-3.5 mlr-xl-7 mb-4 profile-page">
+
+    <div class="profile-container col-md-3">
+        <div class="profile-card d-flex flex-column align-items-center">
+            <img src="{% if user.profile_photo %}
+                {{user.profile_photo.url}}
+                {% else %}
+                {% static 'images/profile.png' %}
+                {% endif %}" alt="profile-photo" class="profile-picture mt-2" width="100px" height="100px">
+            {% if user.id == request.user.id %}
+            <a href="{% url 'update-profile' request.user.id %}" type="button" class="btn-edit-outline mt-2">Edit
+                Profile</a>
+            {% endif %}
+            <div class="col-12 d-flex flex-column align-items-center">
+                <h4 class="mt-2">{{user.get_full_name}}</h4>
+                {% if user.bio %}
+                <p class="mt-2">{{user.bio}}</p>
+                {% endif %}
+                <p class="m-0">Joined on: {{user.date_joined|date:"M d, Y"}}</p>
+            </div>
+        </div>
+    </div>
+    <div class="posts-container ms-auto col-md-9 col-lg-8 mt-3 mt-md-0">
+        <div class="posts-card d-flex flex-column">
+            {% if page_object %}
+            <h3>Posts</h3>
+            {% for post in page_object %}
+            <div class="mb-3">
+                {% include 'components/post-card.html' %}
+            </div>
+            {% endfor %}
+            {% if posts_count > 8 %}
+            {% include 'components/pagination.html' %}
+            {% endif %}
+            {% else %}
+            <h3>You don't have any posts</h3>
+            {% endif %}
+        </div>
+    </div>
+
+</div>
+{% endblock %}

@@ -1,0 +1,41 @@
+{% extends '_base.html' %}
+{% load static %}
+
+{% block title %}
+Login to SpaceTech Odyssey
+{% endblock %}
+
+{% block css %}
+<link href="{% static 'css/forms.css' %}" rel="stylesheet">
+{% endblock %}
+
+
+{% block content %}
+{% include 'components/shared/navbar.html' with position='sticky-top' login_page='active' %}
+<div class="mlr-0.5 mlr-md-2 mlr-lg-3.5 mlr-xl-7 mb-4">
+    <h1 class="text-center">Login</h1>
+    <div class="d-flex justify-content-center">
+        <form action="{% url 'login' %}" method="POST" class="d-flex flex-column auth-form" autocomplete="on">
+            {% csrf_token %}
+            <div class="form_control{% if form.email.errors %} errors{% endif %}">
+                {{form.email.label_tag}}
+                {{form.email}}
+                {{form.email.errors}}
+            </div>
+            <div class="form_control{% if form.password.errors %} errors{% endif %}">
+                {{form.password.label_tag}}
+                <div class="d-flex align-items-center">
+                    {{form.password}}
+                    <div class="eye" id="pwd-toggler"><i class="bi bi-eye-slash-fill" id="eye-icon"></i></div>
+                </div>
+                {{form.password.errors}}
+            </div>
+            <button type="submit" class="btn-submit mt-3">Login</button>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block js %}
+<script src="{% static 'js/login.js' %}"></script>
+{% endblock %}
