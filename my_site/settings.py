@@ -33,7 +33,7 @@ SECRET_KEY = env('SECRET_KEY')
 DEBUG = env('IS_DEVELOPMENT')
 
 ALLOWED_HOSTS = [
-    # env('APP_HOST')
+    env('APP_HOST')
 ]
 
 
