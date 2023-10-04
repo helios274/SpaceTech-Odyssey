@@ -5,9 +5,17 @@
   --bg-color: #ffffe0;
   --primary-color: #00ad95;
   --input-bg-color: #bbe9e97e;
+  --header-height: 3.6rem;
+  --footer-height: 3.6rem;
 }
+html,
 body {
   background-color: var(--bg-color) !important;
+  height: 100%;
+}
+main {
+  min-height: calc(100vh - var(--footer-height) - var(--header-height));
+  background-color: var(--bg-color);
 }
 .messages {
   position: fixed;
@@ -42,7 +50,7 @@ body {
   border-radius: 50%;
 }
 .navbar {
-  height: 3.6rem;
+  height: var(--header-height);
   background-color: var(--bg-color) !important;
 }
 .web-brand {
@@ -228,10 +236,18 @@ h1 {
 }
 
 footer {
-  height: 3.6rem;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: var(--footer-height);
 }
 footer a {
   text-decoration: none;
   color: black;
   font-size: 17px;
+}
+@media (min-height: 100%) {
+  footer {
+    position: static;
+  }
 }

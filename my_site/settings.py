@@ -33,7 +33,7 @@ SECRET_KEY = env('SECRET_KEY')
 DEBUG = env('IS_DEVELOPMENT')
 
 ALLOWED_HOSTS = [
-    env('APP_HOST')
+    # env('APP_HOST')
 ]
 
 
@@ -47,7 +47,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'blog',
-    'account'
+    'account',
+    'storages'
 ]
 
 MIDDLEWARE = [
@@ -146,10 +147,23 @@ STATIC_URL = '/static/'
 STATICFILES_DIRS = [
     BASE_DIR / 'static'
 ]
-
-
 MEDIA_ROOT = BASE_DIR / 'media'
 MEDIA_URL = '/media/'
+
+# AWS S3 config
+AWS_ACCESS_KEY_ID = env('AWS_ACCESS_KEY_ID')
+AWS_SECRET_ACCESS_KEY = env('AWS_SECRET_ACCESS_KEY')
+
+AWS_STORAGE_BUCKET_NAME = env('AWS_STORAGE_BUCKET_NAME')
+AWS_S3_REGION_NAME = env('AWS_S3_REGION_NAME')
+AWS_S3_CUSTOM_DOMAIN = '%s.s3.amazonaws.com' % AWS_STORAGE_BUCKET_NAME
+
+STATICFILES_FOLDER = 'static'
+MEDIAFILES_FOLDER = 'media'
+
+DEFAULT_FILE_STORAGE = 'custom_storages.MediaFilesStorage'
+STATICFILES_STORAGE = 'custom_storages.StaticFileStorage'
+
 
 MESSAGE_TAGS = {
     messages.ERROR: "danger"

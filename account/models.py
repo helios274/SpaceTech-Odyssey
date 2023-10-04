@@ -30,7 +30,8 @@ class CustomUser(AbstractUser):
     middle_name = models.CharField(max_length=150, blank=True)
     bio = models.TextField(max_length=500, blank=True)
     date_of_birth = models.DateField(null=True, blank=True)
-    profile_photo = models.ImageField(upload_to='images/profile', blank=True)
+    profile_photo = models.ImageField(
+        upload_to='profile/', blank=True)
 
     objects = CustomUserManager()
 
