@@ -21,6 +21,7 @@ Register to SpaceTech Odyssey
                 {% if field.name != "password" %}
                 {{field.label_tag}}
                 {{field}}
+                {{field.help_text}}
                 {{field.errors}}
                 {% endif %}
             </div>
@@ -31,6 +32,7 @@ Register to SpaceTech Odyssey
                     {{form.password}}
                     <div class="eye" id="pwd-toggler"><i class="bi bi-eye-slash-fill" id="eye-icon"></i></div>
                 </div>
+                {{form.password.help_text}}
                 {{form.password.errors}}
             </div>
             <button type="submit" class="btn-submit mt-3">Register</button>

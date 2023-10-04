@@ -13,9 +13,10 @@ class RegisterForm(forms.ModelForm):
     first_name = forms.CharField(required=True)
     middle_name = forms.CharField(required=False)
     last_name = forms.CharField(required=True)
-    date_of_birth = forms.DateField(required=True)
+    date_of_birth = forms.DateField(required=True, widget=forms.DateInput(
+        format='%d/%m/%Y'), help_text="Accepted date format: DD/MM/YYYY")
     password = forms.CharField(
-        max_length=35, widget=forms.PasswordInput, validators=[validate_password])
+        max_length=35, widget=forms.PasswordInput, validators=[validate_password], help_text="Alphanumeric & 5 to 35 characters")
 
     class Meta:
         model = CustomUser

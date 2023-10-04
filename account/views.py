@@ -28,10 +28,15 @@ class RegisterView(View):
                 return render(request, 'account/register.html', {"form": form})
             user = CustomUser.objects.create_user(
                 email=form.cleaned_data['email'],
+                first_name=form.cleaned_data['first_name'],
+                middle_name=form.cleaned_data['middle_name'],
+                last_name=form.cleaned_data['last_name'],
+                bio=form.cleaned_data['bio'],
+                date_of_birth=form.cleaned_data['date_of_birth'],
                 password=form.cleaned_data['password'],
-                username=form.cleaned_data['username']
             )
             user.save()
+            messages.success(request, "Account has been created.")
             return redirect('login')
         return render(request, 'account/register.html', {"form": form})
 
