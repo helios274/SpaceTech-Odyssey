@@ -26,9 +26,6 @@ class RegisterView(View):
                 messages.error(
                     request, "Email is already registered. Please Login")
                 return render(request, 'account/register.html', {"form": form})
-            if CustomUser.objects.filter(username=form.cleaned_data['username']).exists():
-                messages.error(request, "Username is already taken")
-                return render(request, 'account/register.html', {"form": form})
             user = CustomUser.objects.create_user(
                 email=form.cleaned_data['email'],
                 password=form.cleaned_data['password'],
