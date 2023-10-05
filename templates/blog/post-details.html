@@ -24,7 +24,9 @@ Post
         {% if post.user.id == request.user.id %}
         <div class="d-flex flex-grow-1 justify-content-center align-items-center">
             <a href="{% url 'update-post' post.slug %}" class="btn-edit">Edit</a>
-            <a href="{% url 'delete-post' post.slug %}" class="btn-delete-outline">Delete</a>
+            <button type="button" class="btn-delete-outline" data-bs-toggle="modal" data-bs-target="#deletePostModal">
+                Delete
+            </button>
         </div>
         {% endif %}
         <div class="d-flex flex-column ms-sm-auto justify-content-sm-end">
@@ -39,6 +41,25 @@ Post
         {% for tag in post.tags.all %}
         <a href="{% url 'tag' tag.slug %}" class="post-tag me-2">{{tag}}</a>
         {% endfor %}
+    </div>
+</div>
+
+<div class="modal fade" id="deletePostModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+    aria-labelledby="deletePostModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title fs-5" id="deletePostModalLabel">Delete post</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <h3>Are you sure?</h3>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">No</button>
+                <a href="{% url 'delete-post' post.slug %}" class="btn btn-danger">Yes</a>
+            </div>
+        </div>
     </div>
 </div>
 {% endblock %}

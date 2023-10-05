@@ -12,7 +12,7 @@ Profile
 
 
 {% block content %}
-{% include 'components/shared/navbar.html' with position='sticky-top' profile='active' %}
+{% include 'components/shared/navbar.html' with position='sticky-top' profile='active' search_bar_visibility='d-none' %}
 <div class="row mlr-0.5 mlr-md-2 mlr-lg-3.5 mlr-xl-7 mb-4 profile-page">
 
     <div class="profile-container col-md-3">
@@ -22,23 +22,23 @@ Profile
                 {% else %}
                 {% static 'images/profile.png' %}
                 {% endif %}" alt="profile-photo" class="profile-picture mt-2" width="100px" height="100px">
-            {% if user.id == request.user.id %}
-            <a href="{% url 'update-profile' request.user.id %}" type="button" class="btn-edit-outline mt-2">Edit
+            {% if user.id == user_profile.id %}
+            <a href="{% url 'update-profile' user.id %}" type="button" class="btn-edit-outline mt-2">Edit
                 Profile</a>
             {% endif %}
             <div class="col-12 d-flex flex-column align-items-center">
-                <h4 class="mt-2">{{user.get_full_name}}</h4>
-                {% if user.bio %}
-                <p class="mt-2">{{user.bio}}</p>
+                <h4 class="mt-2">{{user_profile.get_full_name}}</h4>
+                {% if user_profile.bio %}
+                <p class="mt-2">{{user_profile.bio}}</p>
                 {% endif %}
-                <p class="m-0">Joined on: {{user.date_joined|date:"M d, Y"}}</p>
+                <p class="m-0">Joined on: {{user_profile.date_joined|date:"M d, Y"}}</p>
             </div>
         </div>
     </div>
     <div class="posts-container ms-auto col-md-9 col-lg-8 mt-3 mt-md-0">
         <div class="posts-card d-flex flex-column">
             {% if page_object %}
-            <h3>Posts</h3>
+            <h3>Posts ({{posts_count}})</h3>
             {% for post in page_object %}
             <div class="mb-3">
                 {% include 'components/post-card.html' %}

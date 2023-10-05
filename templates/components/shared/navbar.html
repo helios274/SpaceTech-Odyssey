@@ -1,25 +1,17 @@
 {% load static %}
 <nav class="navbar {{position}} mb-4">
-    <div class="d-flex flex-row align-items-center justify-content-between justify-content-sm-start mlr-0.5 mlr-md-2 mlr-lg-3.5 mlr-xl-7"
-        style="width: 100%;">
+    <div class="d-flex flex-row align-items-center justify-content-between justify-content-sm-start mlr-0.5 mlr-md-2 mlr-lg-3.5 mlr-xl-7" style="width: 100%;">
         <a class="web-brand" href="{% url 'index' %}">
             <span class="d-none d-lg-block">SpaceTech Odyssey</span>
-            <img class="navbar-img ms-2 d-block d-lg-none" src="{% static 'images/STO.png' %}" alt="logo" height="31px"
-                width="31px">
+            <img class="navbar-img ms-2 d-block d-lg-none" src="{% static 'images/STO.png' %}" alt="logo" height="31px" width="31px">
         </a>
-        <div class="{{update_profile}}">
-            <div class="d-none d-sm-block">
-                <form action="{% url 'search-post' %}" method="post" class="d-flex search-bar nav">
-                    {% csrf_token %}
-                    <input type="search" class="flex-grow-1" name="search_field" id="search-input">
-                    <button class="ms-auto" type="submit" id="search-btn" disabled><i class="bi bi-search"></i></button>
-                </form>
-            </div>
+        <div class="{{search_bar_visibility}}">
+            <form action="{% url 'search-post' %}" method="post" class="d-flex search-bar w-100">
+                {% csrf_token %}
+                <input type="search" class="flex-grow-1" name="search_field" id="search-input">
+                <button class="ms-auto" type="submit" id="search-btn" disabled><i class="bi bi-search"></i></button>
+            </form>
         </div>
-        <button class="ms-2 search-collapse-btn d-block d-sm-none" type="button" data-bs-toggle="collapse"
-            data-bs-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample">
-            <i class="bi bi-search"></i>
-        </button>
 
         <div class="d-flex justify-content-end ms-auto">
             <a href="{% url 'all-posts' %}" class="navbar-link {{all_posts}} d-none d-md-block">All posts</a>
@@ -30,10 +22,10 @@
                     {{request.user.profile_photo.url}}
                     {% else %}
                     {% static 'images/profile.png' %}
-                    {% endif %}" alt="profile_image" width="31px" height="31px" data-bs-toggle="dropdown"
-                aria-expanded="false">
+                    {% endif %}" alt="profile_image" width="31px" height="31px" data-bs-toggle="dropdown" aria-expanded="false">
             <ul class="dropdown-menu dropdown-menu-end mlr-0.5 mlr-md-2 mlr-lg-3.5 mlr-xl-7">
-                <li><a class="dropdown-item {{profile}}" href="{% url 'profile' user.id %}">Profile</a></li>
+                <li><a class="dropdown-item {{profile}}" href="{% url 'profile' user.id %}">Profile:
+                        {{user.first_name}}</a></li>
                 <li><a class="dropdown-item d-md-none d-block {{all_posts}}" href="{% url 'all-posts' %}">All posts</a>
                 </li>
                 <li><a class="dropdown-item d-md-none d-block {{create_post}}" href="{% url 'create-post' %}">Create
@@ -51,10 +43,9 @@
         </div>
         {% else %}
         <a href="{% url 'register' %}" class="navbar-link d-none d-md-block {{register_page}}">Register</a>
-        <a href="{% url 'login' %}" class="navbar-link d-none d-md-block {{login_page}}">Login</a>
+        <a href="{% url 'login' %}" class="navbar-link d-none d-md-block me-0 {{login_page}}">Login</a>
         <div class="dropdown">
-            <button class="d-block d-md-none dropdown-toggler" data-bs-toggle="dropdown" aria-expanded="false"><i
-                    class="bi bi-list"></i></button>
+            <button class="d-block d-md-none dropdown-toggler" data-bs-toggle="dropdown" aria-expanded="false"><i class="bi bi-list"></i></button>
             <ul class="d-md-none dropdown-menu dropdown-menu-end">
                 <li><a class="dropdown-item {{all_posts}}" href="{% url 'all-posts' %}">All posts</a></li>
                 <li><a class="dropdown-item {{register_page}}" href="{% url 'register' %}">Register</a></li>
@@ -64,10 +55,3 @@
         {% endif %}
     </div>
 </nav>
-<div class="collapse mb-2 d-sm-none" id="collapseExample">
-    <form action="{% url 'search-post' %}" method="post" class="d-flex justify-content-center search-bar nav">
-        {% csrf_token %}
-        <input type="search" class="flex-grow-1" name="search_field" id="search-input">
-        <button class="ms-auto" type="submit" id="search-btn" disabled><i class="bi bi-search"></i></button>
-    </form>
-</div>

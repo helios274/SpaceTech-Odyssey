@@ -79,7 +79,7 @@ class ProfileView(View):
         paginator = Paginator(posts, 8)
         page_number = request.GET.get("page")
         page_object = Paginator.get_page(paginator, page_number)
-        context = {"user": user, "page_object": page_object,
+        context = {"user_profile": user, "page_object": page_object,
                    "posts_count": paginator.count}
         return render(request, 'account/profile.html', context)
 
