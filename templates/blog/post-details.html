@@ -36,7 +36,7 @@ Post
     <hr class="mt-1">
     <h1 class="mt-1">{{post.title}}</h1>
     <p class="mt-4">{{post.content}}</p>
-    <div class="d-flex mt-3">
+    <div class="d-flex mt-3 align-items-center">
         <h6 class="me-2">Tags:</h6>
         {% for tag in post.tags.all %}
         <a href="{% url 'tag' tag.slug %}" class="post-tag me-2">{{tag}}</a>
@@ -44,8 +44,7 @@ Post
     </div>
 </div>
 
-<div class="modal fade" id="deletePostModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
-    aria-labelledby="deletePostModalLabel" aria-hidden="true">
+<div class="modal fade" id="deletePostModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="deletePostModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">

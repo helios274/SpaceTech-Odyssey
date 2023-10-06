@@ -15,6 +15,8 @@ from django.contrib.auth.decorators import login_required
 
 
 def index(request):
+    if request.user.is_authenticated:
+        return redirect("all-posts")
     posts = BlogPost.objects.all()[:2]
     return render(request, 'blog/index.html', {"posts": posts})
 

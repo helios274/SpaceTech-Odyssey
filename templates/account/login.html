@@ -14,6 +14,9 @@ Login to SpaceTech Odyssey
 {% include 'components/shared/navbar.html' with position='sticky-top' login_page='active' search_bar_visibility='d-none'%}
 <div class="mlr-0.5 mlr-md-2 mlr-lg-3.5 mlr-xl-7 mb-4">
     <h1 class="text-center">Login</h1>
+    <p class="mb-0">Test user credentials</p>
+    <p class="mb-0">email: test-user@mail.com</p>
+    <p class="mb-0">password: test123</p>
     <div class="d-flex justify-content-center">
         <form action="{% url 'login' %}" method="POST" class="d-flex flex-column auth-form" autocomplete="on">
             {% csrf_token %}
