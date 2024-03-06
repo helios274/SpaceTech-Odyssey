@@ -26,7 +26,7 @@ To run this project, you will need to add the following environment variables to
 
 `SECRET_KEY`: Django secret key
 
-`IS_DEVELOPMENT`: Indicate whether the application is running in development (True) or production (False) mode
+`IS_DEVELOPMENT`: Indicates whether the application is running in development (True) or production (False) mode
 
 `APP_HOST`: Allowed host URL
 
