@@ -1,4 +1,6 @@
+__pycache__
+.venv
 .env
-static
 .ebextensions
 code.zip
+vercel.json
