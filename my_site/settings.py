@@ -16,7 +16,8 @@ from environ import Env
 import dj_database_url
 
 env = Env(
-    IS_DEVELOPMENT=(bool, False)
+    IS_DEVELOPMENT=(bool, False),
+    ALLOWED_HOSTS=(list, []),
 )
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -33,9 +34,9 @@ SECRET_KEY = env('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = env('IS_DEVELOPMENT')
 
-ALLOWED_HOSTS = [
-    env('APP_HOST')
-]
+ALLOWED_HOSTS = list(
+    env.list('ALLOWED_HOSTS', default=['localhost', '127.0.0.1'])
+)
 
 
 # Application definition
@@ -49,7 +50,6 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'blog',
     'account',
-    'storages'
 ]
 
 MIDDLEWARE = [
@@ -86,30 +86,9 @@ WSGI_APPLICATION = 'my_site.wsgi.app'
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.postgresql',
-#         'NAME': 'SpaceTechDB',
-#         'USER': 'postgres',
-#         'PASSWORD': 'posql.appu98',
-#         'HOST': 'localhost',
-#     }
-# }
 
-# AWS
-# DATABASES = {
-#     'default': {
-#         'ENGINE': env('DB_ENGINE'),
-#         'NAME': env('DB_NAME'),
-#         'USER': env('DB_USER'),
-#         'PASSWORD': env('DB_PASSWORD'),
-#         'HOST': env('DB_HOST'),
-#         'PORT': env('DB_PORT')
-#     }
-# }
-# Render cloud database
 DATABASES = {
-    'default': dj_database_url.parse(env('EXTERNAL_DB_URL'))
+    'default': dj_database_url.parse(env('DB_URI'))
 }
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
@@ -154,18 +133,18 @@ MEDIA_ROOT = BASE_DIR / 'media'
 MEDIA_URL = '/media/'
 
 # AWS S3 config
-AWS_ACCESS_KEY_ID = env('AWS_ACCESS_KEY_ID')
-AWS_SECRET_ACCESS_KEY = env('AWS_SECRET_ACCESS_KEY')
+# AWS_ACCESS_KEY_ID = env('AWS_ACCESS_KEY_ID')
+# AWS_SECRET_ACCESS_KEY = env('AWS_SECRET_ACCESS_KEY')
 
-AWS_STORAGE_BUCKET_NAME = env('AWS_STORAGE_BUCKET_NAME')
-AWS_S3_REGION_NAME = env('AWS_S3_REGION_NAME')
-AWS_S3_CUSTOM_DOMAIN = '%s.s3.amazonaws.com' % AWS_STORAGE_BUCKET_NAME
+# AWS_STORAGE_BUCKET_NAME = env('AWS_STORAGE_BUCKET_NAME')
+# AWS_S3_REGION_NAME = env('AWS_S3_REGION_NAME')
+# AWS_S3_CUSTOM_DOMAIN = '%s.s3.amazonaws.com' % AWS_STORAGE_BUCKET_NAME
 
-STATICFILES_FOLDER = 'static'
-MEDIAFILES_FOLDER = 'media'
+# STATICFILES_FOLDER = 'static'
+# MEDIAFILES_FOLDER = 'media'
 
-DEFAULT_FILE_STORAGE = 'custom_storages.MediaFilesStorage'
-STATICFILES_STORAGE = 'custom_storages.StaticFileStorage'
+# DEFAULT_FILE_STORAGE = 'custom_storages.MediaFilesStorage'
+# STATICFILES_STORAGE = 'custom_storages.StaticFileStorage'
 
 
 MESSAGE_TAGS = {
