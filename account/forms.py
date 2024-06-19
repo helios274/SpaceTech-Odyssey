@@ -1,5 +1,5 @@
 from django import forms
-from .models import CustomUser
+from .models import User
 
 
 def validate_password(password):
@@ -27,7 +27,7 @@ class RegisterForm(forms.ModelForm):
     )
 
     class Meta:
-        model = CustomUser
+        model = User
         fields = ['email', 'first_name', 'middle_name', 'last_name',
                   'bio', 'date_of_birth']
 
@@ -44,7 +44,7 @@ class ProfileUpdateForm(forms.ModelForm):
     )
 
     class Meta:
-        model = CustomUser
+        model = User
         fields = ['profile_photo', 'first_name', 'middle_name', 'last_name',
                   'bio', 'date_of_birth', ]
         widgets = {

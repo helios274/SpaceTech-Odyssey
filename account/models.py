@@ -2,7 +2,7 @@ from django.db import models
 from django.contrib.auth.models import AbstractUser, BaseUserManager
 
 
-class CustomUserManager(BaseUserManager):
+class UserManager(BaseUserManager):
     def create_user(self, email, password=None, **extra_fields):
         if not email:
             raise ValueError('The Email field must be set')
@@ -24,7 +24,7 @@ class CustomUserManager(BaseUserManager):
         return self.create_user(email, password, **extra_fields)
 
 
-class CustomUser(AbstractUser):
+class User(AbstractUser):
     username = None
     email = models.EmailField(unique=True)
     middle_name = models.CharField(max_length=150, blank=True)
@@ -33,7 +33,7 @@ class CustomUser(AbstractUser):
     profile_photo = models.ImageField(
         upload_to='profile/', blank=True)
 
-    objects = CustomUserManager()
+    objects = UserManager()
 
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = []

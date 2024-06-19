@@ -7,7 +7,7 @@ from django.urls import reverse_lazy
 from django.core.paginator import Paginator
 from django.contrib.auth.decorators import login_required
 from .forms import RegisterForm, LoginForm, ProfileUpdateForm
-from .models import CustomUser
+from .models import User
 from blog.models import BlogPost
 
 
@@ -22,11 +22,11 @@ class RegisterView(View):
     def post(self, request):
         form = RegisterForm(request.POST)
         if form.is_valid():
-            if CustomUser.objects.filter(email=form.cleaned_data['email']).exists():
+            if User.objects.filter(email=form.cleaned_data['email']).exists():
                 messages.error(
                     request, "Email is already registered. Please Login")
                 return render(request, 'account/register.html', {"form": form})
-            user = CustomUser.objects.create_user(
+            user = User.objects.create_user(
                 email=form.cleaned_data['email'],
                 first_name=form.cleaned_data['first_name'],
                 middle_name=form.cleaned_data['middle_name'],
@@ -52,7 +52,7 @@ class LoginView(View):
     def post(self, request):
         form = LoginForm(request.POST)
         if form.is_valid():
-            user = CustomUser.objects.get(email=form.cleaned_data['email'])
+            user = User.objects.get(email=form.cleaned_data['email'])
             if user:
                 if user.check_password(form.cleaned_data['password']):
                     auth.login(request, user)
@@ -74,7 +74,7 @@ class LogoutView(View):
 
 class ProfileView(View):
     def get(self, request, id):
-        user = CustomUser.objects.get(id=id)
+        user = User.objects.get(id=id)
         posts = BlogPost.objects.filter(user=user)
         paginator = Paginator(posts, 8)
         page_number = request.GET.get("page")
@@ -86,7 +86,7 @@ class ProfileView(View):
 
 class UpdateProfileView(LoginRequiredMixin, UpdateView):
     login_url = '/auth/login'
-    model = CustomUser
+    model = User
     form_class = ProfileUpdateForm
     template_name = 'account/update-profile.html'
 

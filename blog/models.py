@@ -1,5 +1,5 @@
 from django.db import models
-from account.models import CustomUser
+from account.models import User
 from django.utils.timezone import now
 from django.utils.text import slugify
 
@@ -16,7 +16,7 @@ class Tag(models.Model):
 
 
 class BlogPost(models.Model):
-    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
     title = models.CharField(max_length=255)
     content = models.TextField(max_length=2000)
     tags = models.ManyToManyField(Tag)
