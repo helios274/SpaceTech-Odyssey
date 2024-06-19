@@ -42,6 +42,8 @@ ALLOWED_HOSTS = list(
 # Application definition
 
 INSTALLED_APPS = [
+    'django_browser_reload',
+    'debug_toolbar',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -53,6 +55,8 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+    'django_browser_reload.middleware.BrowserReloadMiddleware',
+    'debug_toolbar.middleware.DebugToolbarMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -108,6 +112,9 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+INTERNAL_IPS = [
+    "127.0.0.1",
+]
 
 # Internationalization
 # https://docs.djangoproject.com/en/4.2/topics/i18n/
