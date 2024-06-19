@@ -16,7 +16,7 @@ from environ import Env
 import dj_database_url
 
 env = Env(
-    IS_DEVELOPMENT=(bool, False),
+    DEBUG=(bool, False),
     ALLOWED_HOSTS=(list, []),
 )
 
@@ -32,7 +32,7 @@ Env.read_env(BASE_DIR / '.env')
 SECRET_KEY = env('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = env('IS_DEVELOPMENT')
+DEBUG = env('DEBUG')
 
 ALLOWED_HOSTS = list(
     env.list('ALLOWED_HOSTS', default=['localhost', '127.0.0.1'])
