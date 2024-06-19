@@ -5,3 +5,7 @@ __pycache__/
 .ebextensions
 code.zip
 vercel.json
+
+node_modules
+package*.json
+tailwind.config.js
