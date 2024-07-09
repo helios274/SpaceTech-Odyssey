@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.views import View
 from django.contrib import messages, auth
 from django.views.generic.edit import UpdateView
@@ -8,7 +8,7 @@ from django.core.paginator import Paginator
 from django.contrib.auth.decorators import login_required
 from .forms import RegisterForm, LoginForm, ProfileUpdateForm
 from .models import User
-from blog.models import BlogPost
+from blog.models import Post
 
 
 class RegisterView(View):
@@ -52,7 +52,7 @@ class LoginView(View):
     def post(self, request):
         form = LoginForm(request.POST)
         if form.is_valid():
-            user = User.objects.get(email=form.cleaned_data['email'])
+            user = get_object_or_404(User, email=form.cleaned_data['email'])
             if user:
                 if user.check_password(form.cleaned_data['password']):
                     auth.login(request, user)
@@ -75,7 +75,7 @@ class LogoutView(View):
 class ProfileView(View):
     def get(self, request, id):
         user = User.objects.get(id=id)
-        posts = BlogPost.objects.filter(user=user)
+        posts = Post.objects.filter(user=user)
         paginator = Paginator(posts, 8)
         page_number = request.GET.get("page")
         page_object = Paginator.get_page(paginator, page_number)

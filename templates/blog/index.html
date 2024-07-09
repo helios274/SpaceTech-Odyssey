@@ -7,29 +7,127 @@
 
 {% block content %}
 {% include 'components/shared/navbar.html' %}
-<div class="mlr-0.5 mlr-md-2 mlr-lg-3.5 mlr-xl-7 mb-4">
-    <section class="d-flex flex-column">
-        <h1 class="mt-3 text-center welcome-head-text">Welcome to SpaceTech Odyssey</h1>
-        <p class="text-center welcome-message">Journey through the cosmos of space technology, featuring articles on
+<div class="">
+    <section class="flex flex-col">
+        <h1 class="text-center max-[381px]:flex max-[381px]:flex-col">
+            <span class="text-secondary font-bold text-2xl sm:text-3xl md:text-4xl lg:text-6xl mr-2">Welcome to</span>
+            <span class="text-tertiary font-edu font-extrabold text-3xl sm:text-4xl md:text-5xl lg:text-7xl">SpaceTech Odyssey</span>
+        </h1>
+        <p class="text-center text-sm sm:text-base lg:text-lg text-quaternary font-semibold sm:mx-5 md:mx-10 lg:mx-16 mt-5">Journey through the cosmos of space technology, featuring articles
+            on
             space exploration,
             satellite
             technology, and astronomy.</p>
     </section>
-    <hr>
-    <section>
-        <h3 class="text-center">Latest Posts</h3>
-        <div class="row mt-2 g-2 g-lg-3 g-xl-4">
-            {% for post in posts %}
-            <div class="col-12 col-md-6">
-                {% include 'components/post-card.html' %}
+    <section class="mt-3 sm:mt-5">
+        <div class="container mx-auto mt-10">
+            <div class="relative overflow-hidden">
+                <!-- Carousel Items -->
+                <div id="carousel" class="carousel flex">
+                    <!-- Slide 1 -->
+                    <div class="min-w-full flex flex-col md:flex-row bg-secondary/85 overflow-hidden shadow-md">
+                        <img src="{% static 'images/image-1.jpg' %}" alt="Slide Image 1" class="w-full h-48 min-[480px]:h-60 sm:h-64 md:h-auto md:w-1/2 object-cover">
+                        <div class="p-4 md:w-1/2 flex flex-col">
+                            <h2 class="text-md min-[480px]:text-lg sm:text-xl lg:text-3xl font-bold text-quaternary">The Perseid Meteor Shower Reaches its Peak</h2>
+                            <p class="mt-2 text-quaternary text-sm sm:text-base lg:text-lg">Stargazers rejoice! The annual Perseid meteor shower is upon us...</p>
+                            <div class="flex items-center mt-3 md:mt-auto pb-3 md:pb-5 lg:pb-7">
+                                <img src="{% static 'images/profile.png' %}" alt="Profile Image" class="w-9 sm:w-10 h-9 sm:h-10 p-1 rounded-full ring-2 ring-quaternary dark:ring-gray-500 mr-2">
+                                <div>
+                                    <p class="text-xs sm:text-sm font-bold">Raj Kumar</p>
+                                    <p class="text-xs sm:text-sm text-quaternary">May 05, 2024</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="min-w-full flex flex-col md:flex-row bg-secondary/85 overflow-hidden shadow-md">
+                        <img src="{% static 'images/image-1.jpg' %}" alt="Slide Image 1" class="w-full h-48 min-[480px]:h-60 sm:h-64 md:h-auto md:w-1/2 object-cover">
+                        <div class="p-4 md:w-1/2 flex flex-col">
+                            <h2 class="text-md min-[480px]:text-lg sm:text-xl lg:text-3xl font-bold text-quaternary">The Perseid Meteor Shower Reaches its Peak</h2>
+                            <p class="mt-2 text-quaternary text-sm sm:text-base lg:text-lg">Stargazers rejoice! The annual Perseid meteor shower is upon us...</p>
+                            <div class="flex items-center mt-3 md:mt-auto pb-3 md:pb-5 lg:pb-7">
+                                <img src="{% static 'images/profile.png' %}" alt="Profile Image" class="w-9 sm:w-10 h-9 sm:h-10 p-1 rounded-full ring-2 ring-quaternary dark:ring-gray-500 mr-2">
+                                <div>
+                                    <p class="text-xs sm:text-sm font-bold">Karan</p>
+                                    <p class="text-xs sm:text-sm text-quaternary">May 05, 2024</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="min-w-full flex flex-col md:flex-row bg-secondary/85 overflow-hidden shadow-md">
+                        <img src="{% static 'images/image-1.jpg' %}" alt="Slide Image 1" class="w-full h-48 min-[480px]:h-60 sm:h-64 md:h-auto md:w-1/2 object-cover">
+                        <div class="p-4 md:w-1/2 flex flex-col">
+                            <h2 class="text-md min-[480px]:text-lg sm:text-xl lg:text-3xl font-bold text-quaternary">The Perseid Meteor Shower Reaches its Peak</h2>
+                            <p class="mt-2 text-quaternary text-sm sm:text-base lg:text-lg">Stargazers rejoice! The annual Perseid meteor shower is upon us...</p>
+                            <div class="flex items-center mt-3 md:mt-auto pb-3 md:pb-5 lg:pb-7">
+                                <img src="{% static 'images/profile.png' %}" alt="Profile Image" class="w-9 sm:w-10 h-9 sm:h-10 p-1 rounded-full ring-2 ring-quaternary dark:ring-gray-500 mr-2">
+                                <div>
+                                    <p class="text-xs sm:text-sm font-bold">Alice James</p>
+                                    <p class="text-xs sm:text-sm text-quaternary">May 05, 2024</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Indicators -->
+                <div class="absolute bottom-0 left-0 right-0 flex justify-center p-2">
+                    <span class="indicator w-3 h-3 bg-quaternary/40 rounded-full mx-1 cursor-pointer" data-slide="0"></span>
+                    <span class="indicator w-3 h-3 bg-quaternary/40 rounded-full mx-1 cursor-pointer" data-slide="1"></span>
+                    <span class="indicator w-3 h-3 bg-quaternary/40 rounded-full mx-1 cursor-pointer" data-slide="2"></span>
+                </div>
+
+                <!-- Previous Button -->
+                <button id="prev" class="absolute left-0 top-1/2 transform -translate-y-1/2 px-2 text-quaternary rounded-full">
+                    <span class="inline-flex items-center justify-center w-10 h-10 rounded-full bg-secondary/30">
+                        <img class="h-8 w-6 font-bold" src="{% static 'icons/arrow-prev-svgrepo-com.svg' %}" alt="Previous">
+                        <span class="sr-only">Previous</span>
+                    </span>
+                </button>
+
+                <!-- Next Button -->
+                <button id="next" class="absolute right-0 top-1/2 transform -translate-y-1/2 px-2 text-quaternary rounded-full">
+                    <span
+                        class="inline-flex items-center justify-center w-10 h-10 rounded-full bg-white/30 dark:bg-gray-800/30 group-hover:bg-white/50 dark:group-hover:bg-gray-800/60 group-focus:ring-4 group-focus:ring-white dark:group-focus:ring-gray-800/70 group-focus:outline-none">
+                        <img class="h-8 w-6 font-bold" src="{% static 'icons/arrow-next-svgrepo-com.svg' %}" alt="Next">
+                        <span class="sr-only">Next</span>
+                    </span>
+                </button>
             </div>
-            {% endfor %}
+
+            <!-- <div class="relative overflow-hidden h-52 lg:h-64">
+                <div id="carousel" class="carousel flex h-auto">
+                    <div class="min-w-full flex flex-row justify-center bg-secondary">
+                        <img class="object-cover h-full w-3/12 md:w-4/12" src="{% static 'images/image-1.jpg' %}">
+                        <div class="flex flex-col p-4 leading-normal w-full">
+                            <h5 class="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">Noteworthy technology acquisitions 2021</h5>
+                            <p class="mb-3 font-normal text-gray-700 dark:text-gray-400">Here are the biggest enterprise technology acquisitions of 2021 so far, in reverse chronological order. Here
+                            </p>
+                        </div>
+                    </div>
+                    <div class="min-w-full bg-green-500 flex justify-center items-center text-white h-64">Slide 2</div>
+                    <div class="min-w-full bg-blue-500 flex justify-center items-center text-white h-64">Slide 3</div>
+                    <div class="min-w-full bg-fuchsia-500 flex justify-center items-center text-white h-64">Slide 4</div>
+                    <div class="min-w-full bg-amber-300 flex justify-center items-center text-white h-64">Slide 5</div>
+                </div>
+
+                <div class="absolute bottom-0 left-0 right-0 flex justify-center p-2">
+                    <span class="indicator w-3 h-3 bg-gray-400 rounded-full mx-1 cursor-pointer" data-slide="0"></span>
+                    <span class="indicator w-3 h-3 bg-gray-400 rounded-full mx-1 cursor-pointer" data-slide="1"></span>
+                    <span class="indicator w-3 h-3 bg-gray-400 rounded-full mx-1 cursor-pointer" data-slide="2"></span>
+                    <span class="indicator w-3 h-3 bg-gray-400 rounded-full mx-1 cursor-pointer" data-slide="3"></span>
+                    <span class="indicator w-3 h-3 bg-gray-400 rounded-full mx-1 cursor-pointer" data-slide="4"></span>
+                </div>
+
+                <button id="prev" class="absolute left-0 top-1/2 transform -translate-y-1/2 p-2 bg-gray-800 text-white rounded-full">
+                    &lt;
+                </button>
+
+                <button id="next" class="absolute right-0 top-1/2 transform -translate-y-1/2 p-2 bg-gray-800 text-white rounded-full">
+                    &gt;
+                </button>
+            </div> -->
         </div>
-        <div class="d-flex justify-content-center view-all-link mt-2">
-            <a href="{% url 'all-posts' %}" class="text-center">
-                View all
-            </a>
-        </div>
+
     </section>
 </div>
 

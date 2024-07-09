@@ -6,6 +6,9 @@ __pycache__/
 code.zip
 vercel.json
 
+media
 node_modules
 package*.json
 tailwind.config.js
+
+.vscode

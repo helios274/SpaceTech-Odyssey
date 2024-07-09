@@ -5,8 +5,8 @@
   --bg-color: #ffffe0;
   --primary-color: #00ad95;
   --input-bg-color: #bbe9e97e;
-  --header-height: 3.6rem;
-  --footer-height: 3.6rem;
+  --header-height: 68px;
+  --footer-height: 16px;
 }
 html,
 body {

@@ -6,38 +6,40 @@ Login to SpaceTech Odyssey
 {% endblock %}
 
 {% block css %}
-<link href="{% static 'css/forms.css' %}" rel="stylesheet">
+<!-- <link href="{% static 'css/forms.css' %}" rel="stylesheet"> -->
 {% endblock %}
 
 
 {% block content %}
-{% include 'components/shared/navbar.html' with position='sticky-top' login_page='active' search_bar_visibility='d-none'%}
-<div class="mlr-0.5 mlr-md-2 mlr-lg-3.5 mlr-xl-7 mb-4">
-    <h1 class="text-center">Login</h1>
-    <div class="d-flex flex-column align-items-center">
-        <p class="mb-0">Test user credentials</p>
+{% include 'components/shared/navbar.html' with login='-active' search_bar_visibility='hidden'%}
+<div class="flex flex-col items-center mt-5 md:mt-12">
+    <h1 class="text-center text-2xl sm:text-4xl font-bold text-quaternary mb-7 sm:mb-9">Login</h1>
+    <div class="flex flex-col items-center text-sm">
+        <p class="font-bold">Test user credentials</p>
         <p class="mb-0">email: <span class="text-secondary fw-semibold">test-user@mail.com</span></p>
         <p class="mb-0">password: <span class="text-secondary fw-semibold">test123</span></p>
     </div>
-    <div class="d-flex justify-content-center">
-        <form action="{% url 'login' %}" method="POST" class="d-flex flex-column auth-form" autocomplete="on">
-            {% csrf_token %}
-            <div class="form_control{% if form.email.errors %} errors{% endif %}">
-                {{form.email.label_tag}}
-                {{form.email}}
-                {{form.email.errors}}
+
+    <form action="{% url 'login' %}" method="POST" class="flex flex-col space-y-5 w-full sm:w-7/12 md:w-6/12 lg:w-5/12 xl:w-4/12" autocomplete="on">
+        {% csrf_token %}
+        <div class="form-control{% if form.email.errors %} errors{% endif %}">
+            {{form.email.label_tag}}
+            {{form.email}}
+            {{form.email.errors}}
+        </div>
+        <div class="form-control{% if form.password.errors %} errors{% endif %}">
+            {{form.password.label_tag}}
+            <div class="relative form-control space-y-0">
+                {{form.password}}
+                <button type="button" class="absolute inset-y-0 right-0 px-3 flex items-center text-sm leading-6" id="togglePassword">
+                    <img class="h-4 w-4" id="eye-off" src="{% static 'icons/eye-off.svg' %}" alt="eye">
+                    <img class="h-4 w-4 hidden" id="eye" src="{% static 'icons/eye.svg' %}" alt="eye">
+                </button>
             </div>
-            <div class="form_control{% if form.password.errors %} errors{% endif %}">
-                {{form.password.label_tag}}
-                <div class="d-flex align-items-center">
-                    {{form.password}}
-                    <div class="eye" id="pwd-toggler"><i class="bi bi-eye-slash-fill" id="eye-icon"></i></div>
-                </div>
-                {{form.password.errors}}
-            </div>
-            <button type="submit" class="btn-submit mt-3">Login</button>
-        </form>
-    </div>
+            {{form.password.errors}}
+        </div>
+        <button type="submit" class="submit-btn col-span-2">Login</button>
+    </form>
 </div>
 {% endblock %}
 

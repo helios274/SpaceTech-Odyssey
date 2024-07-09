@@ -1,57 +1,58 @@
 {% load static %}
-<nav class="navbar {{position}} mb-4">
-    <div class="d-flex flex-row align-items-center justify-content-between justify-content-sm-start mlr-0.5 mlr-md-2 mlr-lg-3.5 mlr-xl-7" style="width: 100%;">
-        <a class="web-brand" href="{% url 'index' %}">
-            <span class="d-none d-lg-block">SpaceTech Odyssey</span>
-            <img class="navbar-img ms-2 d-block d-lg-none" src="{% static 'images/STO.png' %}" alt="logo" height="31px" width="31px">
+
+<nav class="bg-primary mb-4">
+    <div class="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto py-2 md:py-3">
+        <a class="py-2" href="{% url 'index' %}">
+            <span class="hidden md:block xl:text-2xl lg:text-xl md:text-lg font-bold font-edu drop-shadow">SpaceTech Odyssey</span>
+            <img class="md:hidden block" src="{% static 'images/STO.png' %}" alt="logo" height="31px" width="31px">
         </a>
-        <div class="{{search_bar_visibility}}">
-            <form action="{% url 'search-post' %}" method="post" class="d-flex search-bar w-100">
-                {% csrf_token %}
-                <input type="search" class="flex-grow-1" name="search_field" id="search-input">
-                <button class="ms-auto" type="submit" id="search-btn" disabled><i class="bi bi-search"></i></button>
-            </form>
-        </div>
 
-        <div class="d-flex justify-content-end ms-auto">
-            <a href="{% url 'all-posts' %}" class="navbar-link {{all_posts}} d-none d-md-block">All posts</a>
 
-            {% if user.is_authenticated %}
-            <a href="{% url 'create-post' %}" class="navbar-link {{create_post}} d-none d-md-block">Create post</a>
-            <img class="profile-picture navbar-img me-2" src="{% if request.user.profile_photo %}
-                    {{request.user.profile_photo.url}}
-                    {% else %}
-                    {% static 'images/profile.png' %}
-                    {% endif %}" alt="profile_image" width="31px" height="31px" data-bs-toggle="dropdown" aria-expanded="false">
-            <ul class="dropdown-menu dropdown-menu-end mlr-0.5 mlr-md-2 mlr-lg-3.5 mlr-xl-7">
-                <li><a class="dropdown-item {{profile}}" href="{% url 'profile' user.id %}">Profile:
-                        {{user.first_name}}</a></li>
-                <li><a class="dropdown-item d-md-none d-block {{all_posts}}" href="{% url 'all-posts' %}">All posts</a>
-                </li>
-                <li><a class="dropdown-item d-md-none d-block {{create_post}}" href="{% url 'create-post' %}">Create
-                        post</a></li>
-                <li>
-                    <hr class="dropdown-divider">
-                </li>
-                <li>
-                    <form class="logout-form" action="{% url 'logout' %}" method="POST">
-                        {% csrf_token %}
-                        <button class="dropdown-item" type="submit">Logout</button>
-                    </form>
-                </li>
-            </ul>
+        <form class="flex items-center mx-auto {{search_bar_visibility}}">
+            <label for="simple-search" class="sr-only">Search</label>
+            <input type="text" id="simple-search" class="bg-primary border border-r-0 border-quaternary text-quaternary/80 text-sm rounded-l-lg focus:outline-none focus:bg-secondary/50 w-56 ps-2 p-2"
+                placeholder="Search keywords..." required />
+            <button type="submit"
+                class="py-2.5 px-2 text-sm font-medium text-quaternary bg-primary rounded-r-lg border border-quaternary hover:bg-secondary focus:ring-4 focus:outline-none focus:ring-blue-300">
+                <img class="w-5 h-4" src="{% static 'icons/search.svg' %}" alt="search-icon">
+                <span class="sr-only">Search</span>
+            </button>
+        </form>
+
+
+        <button data-collapse-toggle="dropdownMenu" id="dropdownButton" type="button" class="nav-toggle-btn" aria-controls="navbar-default" aria-expanded="false">
+            <span class="sr-only">Open main menu</span>
+            <img src="{% static 'icons/menu.svg' %}" alt="menu-icon">
+        </button>
+        <div class="nav-menu" id="navbar-menu">
+            <div class="flex flex-row space-x-3">
+                <a class="nav-item{{all_posts}}" href="{% url 'all-posts' %}">All Posts</a>
+                {% if user.is_authenticated %}
+                <a class="nav-item{{create_post}}" href="{% url 'create-post' %}">Create Post</a>
+                <form class="nav-item" action="{% url 'logout' %}" method="POST">
+                    {% csrf_token %}
+                    <button class="logout-btn" type="submit">Logout</button>
+                </form>
+                {% else %}
+                <a class="nav-item{{register}}" href="{% url 'register' %}">Register</a>
+                <a class="nav-item{{login}}" href="{% url 'login' %}">LogIn</a>
+                {% endif %}
+            </div>
         </div>
-        {% else %}
-        <a href="{% url 'register' %}" class="navbar-link d-none d-md-block {{register_page}}">Register</a>
-        <a href="{% url 'login' %}" class="navbar-link d-none d-md-block me-0 {{login_page}}">Login</a>
-        <div class="dropdown">
-            <button class="d-block d-md-none dropdown-toggler" data-bs-toggle="dropdown" aria-expanded="false"><i class="bi bi-list"></i></button>
-            <ul class="d-md-none dropdown-menu dropdown-menu-end">
-                <li><a class="dropdown-item {{all_posts}}" href="{% url 'all-posts' %}">All posts</a></li>
-                <li><a class="dropdown-item {{register_page}}" href="{% url 'register' %}">Register</a></li>
-                <li><a class="dropdown-item {{login_page}}" href="{% url 'login' %}">Login</a></li>
-            </ul>
+        <div class="navbar-dropdown menu-transition hidden" id="dropdownMenu">
+            <div class="flex flex-col space-y-2">
+                <a class="nav-item{{all_posts}}" href="{% url 'all-posts' %}">All Posts</a>
+                {% if user.is_authenticated %}
+                <a class="nav-item{{create_post}}" href="{% url 'create-post' %}">Create Post</a>
+                <form class="nav-item" action="{% url 'logout' %}" method="POST">
+                    {% csrf_token %}
+                    <button class="logout-btn" type="submit">Logout</button>
+                </form>
+                {% else %}
+                <a class="nav-item{{register}}" href="{% url 'register' %}">Register</a>
+                <a class="nav-item{{login}}" href="{% url 'login' %}">LogIn</a>
+                {% endif %}
+            </div>
         </div>
-        {% endif %}
     </div>
 </nav>

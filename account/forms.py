@@ -10,26 +10,28 @@ def validate_password(password):
 
 
 class RegisterForm(forms.ModelForm):
-    first_name = forms.CharField(required=True)
+    first_name = forms.CharField()
     middle_name = forms.CharField(required=False)
-    last_name = forms.CharField(required=True)
+    last_name = forms.CharField()
     date_of_birth = forms.DateField(
-        required=True,
-        widget=forms.DateInput(format='%d/%m/%Y'),
-        input_formats=['%d/%m/%Y', '%d-%m-%Y'],
-        help_text="Accepted date format: DD/MM/YYYY or DD-MM-YYYY"
+        widget=forms.DateInput(attrs={'type': 'date'}),
     )
     password = forms.CharField(
         max_length=35,
         widget=forms.PasswordInput,
         validators=[validate_password],
-        help_text="Alphanumeric & 5 to 35 characters"
+        help_text="Password must be alphanumeric and 5 to 35 characters long."
     )
+    bio = forms.CharField(
+        widget=forms.Textarea(attrs={'rows': 5, }),
+        required=False,
+        max_length=500,
+        help_text="Maximum length of 500 characters.")
 
     class Meta:
         model = User
-        fields = ['email', 'first_name', 'middle_name', 'last_name',
-                  'bio', 'date_of_birth']
+        fields = ['email', 'password', 'first_name',
+                  'middle_name', 'last_name', 'date_of_birth', 'bio']
 
 
 class LoginForm(forms.Form):

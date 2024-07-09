@@ -35,12 +35,11 @@ SECRET_KEY = env('SECRET_KEY')
 DEBUG = env('DEBUG')
 
 ALLOWED_HOSTS = list(
-    env.list('ALLOWED_HOSTS', default=['localhost', '127.0.0.1'])
+    env.list('ALLOWED_HOSTS', default=['127.0.0.1'])
 )
-
+print(ALLOWED_HOSTS)
 
 # Application definition
-
 INSTALLED_APPS = [
     'django_browser_reload',
     'debug_toolbar',
