@@ -1,5 +1,7 @@
 from django import forms
 from .models import User
+from django.conf import settings
+from cloudinary.forms import CloudinaryFileField
 
 
 def validate_password(password):
@@ -40,9 +42,16 @@ class LoginForm(forms.Form):
 
 
 class ProfileUpdateForm(forms.ModelForm):
+    profile_photo = CloudinaryFileField(
+        options={
+            'folder': f'{settings.CLOUDINARY_ROOT_FOLDER}/profile_photos',
+            'transformation': [
+                {'width': 800, 'height': 800, 'crop': 'thumb',
+                    'gravity': 'face', 'radius': 'max'}
+            ],
+        })
     date_of_birth = forms.DateField(
-        widget=forms.DateInput(format='%d/%m/%Y'),
-        input_formats=['%d/%m/%Y', '%d-%m-%Y']
+        widget=forms.DateInput(attrs={'type': 'date'})
     )
 
     class Meta:

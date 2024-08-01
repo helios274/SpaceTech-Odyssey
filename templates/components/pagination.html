@@ -1,68 +1,69 @@
-<nav class="pagination-container d-flex align-items-center mt-3">
-    <ul class="pagination d-inline-flex mb-0">
+<nav class="pagination-container flex items-center justify-evenly">
+    <ul class="pagination">
         <!--Jump to first page-->
         {% if page_object.number == 1 %}
-        <li class="page-item disabled">
-            <a class="page-link">First</a>
+        <li>
+            <a class="page-link-disabled rounded-l-md" type="button" disabled>First</a>
         </li>
         {% else %}
-        <li class="page-item">
-            <a class="page-link" href="?page=1" aria-label="First">First</a>
+        <li>
+            <a class="page-link rounded-l-md" href="?page=1" aria-label="First">First</a>
         </li>
         {% endif %}
 
         <!--Disable previous page button if the current page is the first one-->
         {% if page_object.has_previous %}
-        <li class="page-item">
+        <li>
             <a class="page-link" href="?page={{ page_object.previous_page_number }}" aria-label="Previous">
                 <span aria-hidden="true">&laquo;</span>
             </a>
         </li>
-        <li class="page-item">
+        <li>
             <a class="page-link" href="?page={{ page_object.previous_page_number }}">
                 {{page_object.previous_page_number }}</a>
         </li>
         {% else %}
         <li class="page-item disabled">
-            <a class="page-link" href="" aria-label="Previous">
+            <a class="page-link-disabled" href="" aria-label="Previous">
                 <span aria-hidden="true">&laquo;</span>
             </a>
         </li>
         {% endif %}
 
         <!--Show current page-->
-        <li class="page-item active" aria-current="page">
-            <a class="page-link" href="?page={{ page_object.number }}">{{ page_object.number }}</a>
+        <li aria-current="page">
+            <a class="page-link-active" href="?page={{ page_object.number }}">{{ page_object.number }}</a>
         </li>
 
         <!--Disable next page button if the current page is the last one-->
         {% if page_object.has_next %}
-        <li class="page-item">
+        <li>
             <a class="page-link" href="?page={{ page_object.next_page_number }}">
                 {{page_object.next_page_number }}</a>
         </li>
-        <li class="page-item">
+        <li>
             <a class="page-link" href="?page={{ page_object.next_page_number }}" aria-label="Next">
                 <span aria-hidden="true">&raquo;</span>
             </a>
         </li>
         {% else %}
-        <li class="page-item disabled">
-            <a class="page-link" href="" aria-label="Next">
+        <li>
+            <a class="page-link-disabled" href="" aria-label="Next">
                 <span aria-hidden="true">&raquo;</span>
             </a>
         </li>
-        {% endif %} {% if page_object.number == page_object.paginator.num_pages %}
-        <li class="page-item disabled">
-            <a class="page-link">Last</a>
+        {% endif %}
+        {% if page_object.number == page_object.paginator.num_pages %}
+        <li class="page-item">
+            <a class="page-link-disabled rounded-r-md">Last</a>
         </li>
         {% else %}
-        <li class="page-item">
-            <a class="page-link" href="?page={{ page_object.paginator.num_pages }}">Last</a>
+        <li>
+            <a class="page-link rounded-r-md" href="?page={{ page_object.paginator.num_pages }}">Last</a>
         </li>
         {% endif %}
     </ul>
-    <div class="ms-auto">
+    <div class="font-medium text-sm md:text-base">
         Page {{page_object.number}} of {{page_object.paginator.num_pages}}
     </div>
 </nav>

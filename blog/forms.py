@@ -1,13 +1,29 @@
 from typing import Any
 from django import forms
-from .models import Post, Section, TextBlock, ImageBlock, ListBlock
+from django.conf import settings
+from .models import Post, Comment
 from .utils import generate_slug
+from cloudinary.forms import CloudinaryFileField
 
 
 class PostForm(forms.ModelForm):
+    cover_image = CloudinaryFileField(
+        options={
+            'folder': f'{settings.CLOUDINARY_ROOT_FOLDER}/post_covers',
+            'transformation': [{'width': 800, 'height': 600, 'crop': 'limit'}],
+        })
+    description = forms.CharField(
+        widget=forms.Textarea(attrs={'rows': 5, }),
+        max_length=300,
+        help_text="Max number of 300 characters"
+    )
+    content = forms.CharField(
+        widget=forms.Textarea(attrs={'rows': 10, }),
+    )
+
     class Meta:
         model = Post
-        fields = ['thumbnail', 'title', 'description']
+        fields = ['cover_image', 'title', 'description', 'content']
 
     def save(self, commit: bool = True) -> Any:
         post = super().save(commit=False)
@@ -18,55 +34,7 @@ class PostForm(forms.ModelForm):
         return post
 
 
-class SectionForm(forms.ModelForm):
-    local_id = forms.IntegerField(widget=forms.HiddenInput)
-
+class CommentForm(forms.ModelForm):
     class Meta:
-        model = Section
-        fields = ['title', 'subtitle', 'local_id']
-
-
-class TextBlockForm(forms.ModelForm):
-    local_section_id = forms.IntegerField(widget=forms.HiddenInput)
-
-    class Meta:
-        model = TextBlock
-        fields = ['text', 'local_section_id']
-
-
-class ImageBlockForm(forms.ModelForm):
-    local_section_id = forms.IntegerField(widget=forms.HiddenInput)
-
-    class Meta:
-        model = ImageBlock
-        fields = ['image', 'caption']
-
-
-class ListBlockForm(forms.ModelForm):
-    local_section_id = forms.IntegerField(widget=forms.HiddenInput)
-
-    class Meta:
-        model = ListBlock
-        fields = ['items', 'type', 'local_section_id']
-
-
-CreateSectionFormset = forms.models.inlineformset_factory(
-    Post, Section, SectionForm, extra=1, can_delete=False, max_num=20
-)
-
-CreateTextBlockFormset = forms.models.inlineformset_factory(
-    Section, TextBlock, TextBlockForm, extra=1, can_delete=False, max_num=100
-)
-
-CreateImageBlockFormset = forms.models.inlineformset_factory(
-    Section, ImageBlock, ImageBlockForm, extra=0, can_delete=False, max_num=10
-)
-
-CreateListBlockFormset = forms.models.inlineformset_factory(
-    Section, ListBlock, ListBlockForm, extra=0, can_delete=False, max_num=50
-)
-
-
-UpdateSectionFormset = forms.models.inlineformset_factory(
-    Post, Section, SectionForm, extra=0, can_delete=True
-)
+        model = Comment
+        fields = ['content']

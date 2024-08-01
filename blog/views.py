@@ -2,126 +2,224 @@ from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.views import View
-from django.views.generic import DetailView
-from django.views.generic.edit import CreateView, UpdateView
+from django.views.generic import CreateView, DetailView
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.urls import reverse_lazy
-from django.utils.text import slugify
-from django.utils.timezone import now
 from django.shortcuts import get_object_or_404
 from django.core.paginator import Paginator
-from .models import Post, Tag, Section, TextBlock, ImageBlock, ListBlock
-from .forms import (
-    PostForm,
-    CreateSectionFormset,
-    CreateTextBlockFormset,
-    CreateImageBlockFormset,
-    CreateListBlockFormset,
-)
-from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
+from django.conf import settings
+import mistletoe
+import uuid
+import cloudinary
 
-from pprint import pprint
+from .models import Post, Tag, LikeDislike, Bookmark
+from .forms import PostForm
+
+
+def index(request):
+    if request.user.is_authenticated:
+        return redirect("all-posts")
+    posts = Post.objects.all()[:3]
+    return render(request, 'blog/index.html', {"posts": posts})
+
+
+class CreatePostView(LoginRequiredMixin, CreateView):
+    model = Post
+    form_class = PostForm
+    template_name = 'blog/create_post.html'
+
+    def form_valid(self, form):
+        form.instance.author = self.request.user
+        post = form.save()
+        tags_string = self.request.POST.get('tags')
+        if tags_string:
+            tags = tags_string.split(',')
+            for tag_name in tags:
+                tag, _ = Tag.objects.get_or_create(name=tag_name.strip())
+                post.tags.add(tag)
+        return redirect('post_detail', slug=post.slug)
+
+
+def upload_image(request):
+    if request.method == 'POST':
+        try:
+
+            image_file = request.FILES['image']
+
+            unique_filename = str(uuid.uuid4())
+
+            # Upload image with additional options
+            result = cloudinary.uploader.upload(
+                image_file,
+                # Set the public ID (filename in Cloudinary)
+                public_id=unique_filename,
+                # Upload to a specific Cloudinary folder (optional)
+                folder=f"{settings.CLOUDINARY_ROOT_FOLDER}/post_images",
+                # upload_preset=upload_preset,
+                allowed_formats=["png", "jpg", "jpeg",
+                                 "svg", "jfif", "ico", "webp"],
+                overwrite=True,  # Ensures any existing file with the same public_id is overwritten
+                resource_type="image"
+            )
+            return JsonResponse({'success': True, 'url': result['secure_url']})
+        except Exception as e:
+            return JsonResponse({'success': False, 'error': str(e)})
+    else:
+        return JsonResponse({'success': False, 'error': 'Only POST requests allowed'})
+
+
+class PostDetailView(DetailView):
+    model = Post
+    template_name = 'blog/post_detail.html'
+    context_object_name = 'post'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        post = context['post']
+
+        # Convert Markdown content to HTML
+        post.content_html = mistletoe.markdown(post.content)
+
+        # Fetch counts of likes, dislikes, and bookmarks
+        likes_count = LikeDislike.objects.filter(post=post, like=True).count()
+        dislikes_count = LikeDislike.objects.filter(
+            post=post, like=False).count()
+        bookmarks_count = Bookmark.objects.filter(post=post).count()
+
+        # Add counts to the context
+        context['likes_count'] = likes_count
+        context['dislikes_count'] = dislikes_count
+        context['bookmarks_count'] = bookmarks_count
+
+        return context
+
+
+def update_post(request, slug):
+    post = get_object_or_404(Post, slug=slug)
+    if not post:
+        messages.error(request, 'Post not found')
+        return redirect('all-posts')
+    if post.author_id != request.user.id:
+        messages.error(
+            request, "You do not have permission to update this post")
+        return redirect("index")
+
+    if request.method == 'POST':
+        form = PostForm(request.POST, request.FILES, instance=post)
+        if form.is_valid():
+            post = form.save()
+            tags_string = request.POST.get('tags')
+            if tags_string:
+                tags = tags_string.split(',')
+                post.tags.clear()  # Clear existing tags
+                for tag_name in tags:
+                    tag, _ = Tag.objects.get_or_create(name=tag_name.strip())
+                    post.tags.add(tag)
+            messages.success(request, "Post updated successfully")
+            return redirect('post_detail', slug=post.slug)
+        else:
+            messages.error(request, "Invalid form data")
+
+    else:
+        form = PostForm(instance=post)
+
+    return render(request, 'blog/update_post.html', {"form": form})
+
+
+def get_post_status(request, slug):
+    post = get_object_or_404(Post, slug=slug)
+    if not request.user.is_authenticated:
+        return JsonResponse({
+            'liked': False,
+            'disliked': False,
+            'bookmarked': False
+        })
+    try:
+        like_dislike = LikeDislike.objects.get(user=request.user, post=post)
+        liked = like_dislike.like
+        disliked = not like_dislike.like
+    except LikeDislike.DoesNotExist:
+        liked = False
+        disliked = False
+
+    try:
+        bookmark = Bookmark.objects.get(user=request.user, post=post)
+        bookmarked = True
+    except Bookmark.DoesNotExist:
+        bookmarked = False
+
+    return JsonResponse({
+        'liked': liked,
+        'disliked': disliked,
+        'bookmarked': bookmarked
+    })
 
 
 @login_required
-def create_post(request):
-
-    if request.method == 'POST':
-
-        pprint(dict(request.POST))
-        pprint(request.FILES)
-
-        post_form = PostForm(request.POST, request.FILES)
-        section_formset = CreateSectionFormset(
-            request.POST, prefix='sections'
-        )
-        text_block_formset = CreateTextBlockFormset(
-            request.POST, prefix='text_blocks'
-        )
-        image_block_formset = CreateImageBlockFormset(
-            request.POST, request.FILES, prefix='image_blocks'
-        )
-        list_block_formset = CreateListBlockFormset(
-            request.POST, prefix='list_blocks'
-        )
-
-        if (post_form.is_valid() and
-            section_formset.is_valid() and
-            text_block_formset.is_valid() and
-            image_block_formset.is_valid() and
-                list_block_formset.is_valid()):
-
-            post = post_form.save(commit=False)
-            post.author = request.user
-            post.save()
-            # post_form.save_m2m()
-
-            section_formset_data = section_formset.cleaned_data
-            sections = section_formset.save(commit=False)
-
-            for i, section in enumerate(sections):
-
-                section.post = post
-                section.save()
-
-                text_block_formset_data = text_block_formset.cleaned_data
-                text_blocks = text_block_formset.save(commit=False)
-
-                for j, text_block in enumerate(text_blocks):
-                    if text_block_formset_data[j]['local_section_id'] == section_formset_data[i]['local_id']:
-                        text_block.section = section
-                        text_block.save()
-
-                image_block_formset_data = image_block_formset.cleaned_data
-                image_blocks = image_block_formset.save(commit=False)
-
-                for j, image_block in enumerate(image_blocks):
-                    if image_block_formset_data[j]['local_section_id'] == section_formset_data[i]['local_id']:
-                        image_block.section = section
-                        image_block.save()
-
-                list_block_formset_data = list_block_formset.cleaned_data
-                list_blocks = list_block_formset.save(commit=False)
-
-                for j, list_block in enumerate(list_blocks):
-                    if list_block_formset_data[j]['local_section_id'] == section_formset_data[i]['local_id']:
-                        list_block.section = section
-                        list_block.save()
-
-            tags_string = request.POST.getlist('tags')
-            tags = tags_string[0].split(',')
-            for tag_name in tags:
-                tag, _ = Tag.objects.get_or_create(name=tag_name)
-                post.tags.add(tag)
-
-            return redirect('create-post')
-
+def like_post(request, slug):
+    post = get_object_or_404(Post, slug=slug)
+    try:
+        like_dislike = LikeDislike.objects.get(user=request.user, post=post)
+        if like_dislike.like:
+            like_dislike.delete()
+            status = 'removed'
         else:
-            messages.error(request, 'Form error')
-            pprint(section_formset.errors)
-            pprint(text_block_formset.errors)
-            pprint(image_block_formset.errors)
-            pprint(list_block_formset.errors)
+            like_dislike.like = True
+            like_dislike.save()
+            status = 'liked'
+    except LikeDislike.DoesNotExist:
+        LikeDislike.objects.create(user=request.user, post=post, like=True)
+        status = 'liked'
+    return JsonResponse({'status': status})
 
+
+@login_required
+def dislike_post(request, slug):
+    post = get_object_or_404(Post, slug=slug)
+    try:
+        like_dislike = LikeDislike.objects.get(user=request.user, post=post)
+        if not like_dislike.like:
+            like_dislike.delete()
+            status = 'removed'
+        else:
+            like_dislike.like = False
+            like_dislike.save()
+            status = 'disliked'
+    except LikeDislike.DoesNotExist:
+        LikeDislike.objects.create(user=request.user, post=post, like=False)
+        status = 'disliked'
+    return JsonResponse({'status': status})
+
+
+@login_required
+def bookmark_post(request, slug):
+    post = get_object_or_404(Post, slug=slug)
+    bookmark, created = Bookmark.objects.get_or_create(
+        user=request.user, post=post)
+    if not created:
+        bookmark.delete()
+        status = 'removed'
     else:
-        post_form = PostForm()
-        section_formset = CreateSectionFormset(prefix='sections')
-        text_block_formset = CreateTextBlockFormset(prefix='text_blocks')
-        image_block_formset = CreateImageBlockFormset(prefix='image_blocks')
-        list_block_formset = CreateListBlockFormset(prefix='list_blocks')
-
-    context = {
-        'post_form': post_form,
-        'section_formset': section_formset,
-        'text_block_formset': text_block_formset,
-        'image_block_formset': image_block_formset,
-        'list_block_formset': list_block_formset,
-    }
-
-    return render(request, 'blog/create-post.html', context)
+        status = 'bookmarked'
+    return JsonResponse({'status': status})
 
 
+@login_required
+def delete_post(request, slug):
+    post = get_object_or_404(Post, slug=slug)
+    if not post:
+        messages.error(request, 'Post not found')
+        return redirect('all-posts')
+    if post.author_id != request.user.id:
+        messages.error(
+            request, "You do not have permission to delete this post")
+        return redirect("index")
+    post.delete()
+    messages.success(request, "Post deleted successfully")
+    return redirect('profile', id=request.user.id)
+
+
+@login_required
 def search_tags(request):
     if request.method == 'GET':
         query = request.GET.get('query', '')
@@ -129,19 +227,12 @@ def search_tags(request):
         return JsonResponse(list(tags), safe=False)
 
 
+@login_required
 def add_tag(request):
-    pprint(request.headers)
     if request.method == 'POST':
         name = request.POST.get('name', '')
         tag, created = Tag.objects.get_or_create(name=name)
         return JsonResponse({'id': tag.id, 'name': tag.name})
-
-
-def index(request):
-    if request.user.is_authenticated:
-        return redirect("all-posts")
-    posts = Post.objects.all()[:2]
-    return render(request, 'blog/index.html', {"posts": posts})
 
 
 class AllPostsView(View):
@@ -157,78 +248,6 @@ class AllPostsView(View):
         return render(request, 'blog/posts.html', context)
 
 
-def post_details(request, slug):
-    if request.method == 'GET':
-        post = Post.objects.get(slug=slug)
-        sections = Section.objects.filter(post_id=post.id)
-        text_blocks = []
-        image_blocks = []
-        list_blocks = []
-        for section in sections:
-            text_blocks += TextBlock.objects.filter(section_id=section.id)
-            image_blocks += ImageBlock.objects.filter(section_id=section.id)
-            list_blocks += ListBlock.objects.filter(section_id=section.id)
-
-        context = {
-            'post': post,
-            'sections': sections,
-            'text_blocks': text_blocks,
-            'image_blocks': image_blocks,
-            'list_blocks': list_blocks,
-        }
-        return render(request, 'blog/post-details.html', context)
-
-
-class CreatePostView(LoginRequiredMixin, CreateView):
-    login_url = '/auth/login'
-    model = Post
-    form_class = PostForm
-    template_name = 'blog/create-post.html'
-    success_url = '/posts'
-
-    def form_valid(self, form):
-        form.instance.slug = slugify(form.instance.title[:50])
-        form.instance.user = self.request.user
-        return super().form_valid(form)
-
-
-class UpdatePostView(LoginRequiredMixin, UpdateView):
-    login_url = '/auth/login'
-    model = Post
-    form_class = PostForm
-    template_name = 'blog/update-post.html'
-
-    def form_valid(self, form):
-        form.instance.slug = slugify(form.instance.title[:50])
-        form.instance.date_updated = now()
-        messages.success(self.request, 'Post updated successfully.')
-        return super().form_valid(form)
-
-    def form_invalid(self, form):
-        messages.error(self.request, 'There was an error updating the post.')
-        return super().form_invalid(form)
-
-    def get_success_url(self):
-        success_url = reverse_lazy(
-            'post-details', kwargs={'slug': self.object.slug})
-        return success_url
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        # Retrieve the post object based on the view's model and URL parameters (pk or slug)
-        post = get_object_or_404(Post, slug=self.kwargs['slug'])
-        context['post'] = post
-        return context
-
-
-@login_required
-def delete_post(request, slug):
-    post = Post.objects.get(slug=slug)
-    post.delete()
-    messages.success(request, "Post deleted successfully")
-    return redirect('profile', id=request.user.id)
-
-
 class PostsByTagView(View):
     def get(self, request, slug):
         tag = Tag.objects.get(slug=slug)
@@ -241,7 +260,7 @@ class PostsByTagView(View):
             "page_object": page_object,
             "posts_count": paginator.count
         }
-        return render(request, 'blog/posts-by-tag.html', context)
+        return render(request, 'blog/posts.html', context)
 
 
 class SearchPostsView(View):
@@ -250,6 +269,7 @@ class SearchPostsView(View):
         posts = (
             Post.objects.filter(title__icontains=search_str)
             | Post.objects.filter(tags__name__icontains=search_str)
+            | Post.objects.filter(description__icontains=search_str)
         ).distinct()
         paginator = Paginator(posts, 8)
         page_number = request.GET.get("page")
@@ -259,4 +279,4 @@ class SearchPostsView(View):
             "search_str": search_str,
             "posts_count": paginator.count
         }
-        return render(request, 'blog/search-results.html', context)
+        return render(request, 'blog/posts.html', context)

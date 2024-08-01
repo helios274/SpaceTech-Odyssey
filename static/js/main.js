@@ -1,19 +1,27 @@
 jQuery(function () {
-  var $messages = $("#messages");
-  var $searchBtn = $("#search-btn");
-  if ($messages.length) {
-    setTimeout(function () {
-      $messages.remove();
-    }, 3990);
+  // message functionality
+  function showMessage(message) {
+    message.addClass("message-enter-active");
   }
 
-  var $searchInput = $("#search-input");
-  $searchInput.on("keyup", function () {
-    if ($.trim($searchInput.val()) !== "") {
-      $searchBtn.removeAttr("disabled");
-    } else {
-      $searchBtn.attr("disabled", true);
-    }
+  function hideMessage(message) {
+    message.addClass("message-exit-active");
+    setTimeout(function () {
+      message.remove();
+    }, 300);
+  }
+
+  $("#messageContainer > div").each(function () {
+    var message = $(this);
+    setTimeout(function () {
+      hideMessage(message);
+    }, 3800);
+
+    message.find("button").on("click", function () {
+      hideMessage(message);
+    });
+
+    showMessage(message);
   });
 
   // Navbar dropdown toggle
@@ -47,6 +55,11 @@ jQuery(function () {
     if (window.innerWidth >= 768) {
       closeDropdown();
     }
+  });
+
+  //Search bar
+  $("#searchToggleBtn").on("click", function () {
+    $("#searchBarContainer").toggleClass("md:flex");
   });
 
   // Carousel sliding

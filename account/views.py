@@ -52,8 +52,8 @@ class LoginView(View):
     def post(self, request):
         form = LoginForm(request.POST)
         if form.is_valid():
-            user = get_object_or_404(User, email=form.cleaned_data['email'])
-            if user:
+            try:
+                user = User.objects.get(email=form.cleaned_data['email'])
                 if user.check_password(form.cleaned_data['password']):
                     auth.login(request, user)
                     messages.success(request, "Logged in successfully")
@@ -61,7 +61,8 @@ class LoginView(View):
                 else:
                     messages.error(request, "Incorrect password")
                     return render(request, 'account/login.html', {"form": form})
-            messages.error(request, "Invalid Credentials")
+            except:
+                messages.error(request, "Invalid Credentials")
         return render(request, 'account/login.html', {"form": form})
 
 
@@ -75,7 +76,7 @@ class LogoutView(View):
 class ProfileView(View):
     def get(self, request, id):
         user = User.objects.get(id=id)
-        posts = Post.objects.filter(user=user)
+        posts = Post.objects.filter(author=user)
         paginator = Paginator(posts, 8)
         page_number = request.GET.get("page")
         page_object = Paginator.get_page(paginator, page_number)

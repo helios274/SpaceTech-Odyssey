@@ -1,31 +1,30 @@
 {% load static %}
-<div class="card h-100">
-    <div class="card-body">
-        <div class="d-flex flex-row align-items-center mb-1 mb-md-2">
-            <a href="{% url 'profile' post.user.id %}" class="d-flex post-link">
-                <img src="{% if post.user.profile_photo %}
-                    {{post.user.profile_photo.url}}
+
+<div class="min-w-full flex flex-col md:flex-row bg-white overflow-hidden shadow-md w-full h-auto md:h-fit border-0 rounded-md">
+    <a href="{% url 'post_detail' post.slug %}" class="w-full h-44 md:h-52 md:w-5/12">
+        <img src="{{post.cover_image.url}}" alt="Post card thumbnail" class="object-fill h-full w-full md:rounded-l-md">
+    </a>
+    <div class="py-2 px-3 md:p-4 md:w-7/12 flex flex-col">
+        <a href="{% url 'post_detail' post.slug %}" class="text-md min-[480px]:text-lg sm:text-xl font-bold text-quaternary">{{ post.title| truncatewords:10 }}</a>
+        <p class="mt-2 md:mb-3 text-quaternary text-sm">{{ post.description| truncatewords:20 }}</p>
+        <div class="flex items-center mt-3 md:mt-auto mb-2">
+            <a href="{% url 'profile' post.author.id %}">
+                <img src="{% if post.author.profile_photo %}
+                    {{post.author.profile_photo.url}}
                     {% else %}
                     {% static 'images/profile.png' %}
-                    {% endif %}" alt="profile-photo" class="profile-picture" width="34px" height="34px">
-                {% if post.user.id == request.user.id %}
-                <h6 class="profile-name mt-2 ms-2">You</h6>
-                {% else %}
-                <h6 class="profile-name mt-2 ms-2">{{ post.user.get_full_name}}</h6>
-                {% endif %}
+                    {% endif %}" alt="Profile Image" class="w-9 sm:w-10 h-9 sm:h-10 p-1 rounded-full ring-2 ring-quaternary dark:ring-gray-500 mr-2">
             </a>
-            <h6 class="post-date ms-auto mt-2">{{ post.date_created|date:"M d, Y" }}</h6>
-        </div>
-        <a href="{% url 'post-details' post.slug %}" class="post-link">
-            <h5 class="card-title d-sm-block d-none">{{post.title}}</h5>
-            <h5 class="card-title d-sm-none d-block">{{post.title| truncatewords:9}}</h5>
-            <p class="card-text mb-1 d-sm-block d-none">{{post.content| truncatewords:25}}</p>
-            <p class="card-text mb-1 d-sm-none d-block">{{post.content| truncatewords:15}}</p>
-        </a>
-        <div class="d-flex">
-            {% for tag in post.tags.all %}
-            <a href="{% url 'tag' tag.slug %}" class="post-tag me-2">{{tag}}</a>
-            {% endfor %}
+            <div>
+                <a href="{% url 'profile' post.author.id %}">
+                    {% if post.author.id == user.id %}
+                    <p class="text-sm font-bold">You</p>
+                    {% else %}
+                    <p class="text-sm font-bold">{{post.author.get_full_name}}</p>
+                    {% endif %}
+                </a>
+                <p class="text-xs sm:text-sm text-quaternary">{{ post.created_at|date:"M d, Y" }}</p>
+            </div>
         </div>
     </div>
 </div>

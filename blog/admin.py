@@ -8,7 +8,7 @@ class TagAdmin(admin.ModelAdmin):
 
 class PostAdmin(admin.ModelAdmin):
     prepopulated_fields = {'slug': ('title',)}
-    list_display = ('title', 'date_created')
+    list_display = ('title', 'created_at', 'updated_at')
 
 
 admin.site.register(Tag, TagAdmin)

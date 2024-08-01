@@ -8,11 +8,7 @@
   "routes": [
     {
       "src": "/static/(.*)",
-      "dest": "https://spacetech-bucket.s3.amazonaws.com/static/$1"
-    },
-    {
-      "src": "/media/(.*)",
-      "dest": "https://spacetech-bucket.s3.amazonaws.com/media/$1"
+      "dest": "https://spacetech-bucket-2.s3.amazonaws.com/static/$1"
     },
     {
       "handle": "filesystem"

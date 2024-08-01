@@ -5,52 +5,50 @@
 Profile
 {% endblock %}
 
-{% block css %}
-<link href="{% static 'css/posts.css' %}" rel="stylesheet">
-<link href="{% static 'css/profile.css' %}" rel="stylesheet">
-{% endblock %}
-
-
 {% block content %}
-{% include 'components/shared/navbar.html' with position='sticky-top' profile='active' search_bar_visibility='d-none' %}
-<div class="row mlr-0.5 mlr-md-2 mlr-lg-3.5 mlr-xl-7 mb-4 profile-page">
+{% if user.id == user_profile.id %}
+{% include 'components/shared/navbar.html' with profile='-active' search_bar_visibility='hidden' %}
+{% else %}
+{% include 'components/shared/navbar.html' with search_bar_visibility='hidden' %}
+{% endif %}
+<div class="flex flex-col space-y-5 items-center xl:flex-row xl:space-x-4 xl:items-start xl:space-y-0">
+    <div class="profile-container p-2 rounded-md bg-white shadow-md text-quaternary 
+    flex flex-col items-center w-full md:w-4/6 lg:w-9/12 xl:w-4/12 xl:sticky xl:top-2">
 
-    <div class="profile-container col-md-3">
-        <div class="profile-card d-flex flex-column align-items-center">
+        <div class="flex justify-center w-fit bg-transparent border-2 border-tertiary p-1 rounded-full">
             <img src="{% if user.profile_photo %}
-                {{user.profile_photo.url}}
-                {% else %}
-                {% static 'images/profile.png' %}
-                {% endif %}" alt="profile-photo" class="profile-picture mt-2" width="100px" height="100px">
-            {% if user.id == user_profile.id %}
-            <a href="{% url 'update-profile' user.id %}" type="button" class="btn-edit-outline mt-2">Edit
-                Profile</a>
+                        {{user.profile_photo.url}}
+                        {% else %}
+                        {% static 'images/profile.png' %}
+                        {% endif %}" alt="profile-photo" class="rounded-full h-24 w-24">
+        </div>
+
+        {% if user.id == user_profile.id %}
+        <a href="{% url 'update-profile' user.id %}" type="button"
+            class="edit-profile-btn px-3 py-1 text-sm font-medium rounded-full bg-quaternary/50 text-primary hover:bg-quaternary hover:shadow-md">Edit
+            Profile</a>
+        {% endif %}
+        <div class="flex flex-col items-center space-y-2 mt-1">
+            <h4 class="text-2xl font-semibold">{{user_profile.get_full_name}}</h4>
+            {% if user_profile.bio %}
+            <p class="text-lg font-medium mt-2">{{user_profile.bio}}</p>
             {% endif %}
-            <div class="col-12 d-flex flex-column align-items-center">
-                <h4 class="mt-2">{{user_profile.get_full_name}}</h4>
-                {% if user_profile.bio %}
-                <p class="mt-2">{{user_profile.bio}}</p>
-                {% endif %}
-                <p class="m-0">Joined on: {{user_profile.date_joined|date:"M d, Y"}}</p>
-            </div>
+            <p class="text-sm italic">Joined on: {{user_profile.date_joined|date:"M d, Y"}}</p>
         </div>
     </div>
-    <div class="posts-container ms-auto col-md-9 col-lg-8 mt-3 mt-md-0">
-        <div class="posts-card d-flex flex-column">
-            {% if page_object %}
-            <h3>Posts ({{posts_count}})</h3>
-            {% for post in page_object %}
-            <div class="mb-3">
-                {% include 'components/post-card.html' %}
-            </div>
-            {% endfor %}
-            {% if posts_count > 8 %}
-            {% include 'components/pagination.html' %}
-            {% endif %}
-            {% else %}
-            <h3 class="text-center mt-2">You don't have any posts</h3>
-            {% endif %}
-        </div>
+
+    <div class="posts-card flex flex-col items-center xl:items-start space-y-3 xl:w-8/12">
+        {% if page_object %}
+        <h3 class="text-xl font-extrabold xl:text-2xl">Posts ({{posts_count}})</h3>
+        {% for post in page_object %}
+        {% include 'components/post-card.html' %}
+        {% endfor %}
+        {% if posts_count > 8 %}
+        {% include 'components/pagination.html' %}
+        {% endif %}
+        {% else %}
+        <h3 class="text-4xl font-bold text-secondary">You don't have any posts</h3>
+        {% endif %}
     </div>
 </div>
 {% endblock %}

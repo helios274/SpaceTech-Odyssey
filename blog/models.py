@@ -1,7 +1,7 @@
 from django.utils.text import slugify
 from django.db import models
+from cloudinary.models import CloudinaryField
 from account.models import User
-from django.utils.timezone import now
 from .utils import capitalize_words
 
 
@@ -24,57 +24,59 @@ class Tag(models.Model):
 
 class Post(models.Model):
     author = models.ForeignKey(User, on_delete=models.CASCADE)
-    thumbnail = models.ImageField(upload_to='blog/thumbnails/')
+    cover_image = CloudinaryField('image')
     title = models.CharField(max_length=255)
-    description = models.TextField(max_length=400, blank=True, null=True)
-    tags = models.ManyToManyField(Tag)
-    date_created = models.DateTimeField(default=now)
-    date_updated = models.DateTimeField(default=now)
     slug = models.SlugField(max_length=255, db_index=True, unique=True)
+    description = models.TextField(max_length=400, blank=True, null=True)
+    content = models.TextField()
+    tags = models.ManyToManyField(Tag)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
         return self.title
 
     class Meta:
-        ordering = ['-date_created']
+        ordering = ['-created_at']
 
 
-class Section(models.Model):
+class Comment(models.Model):
     post = models.ForeignKey(
-        Post, related_name='sections', on_delete=models.CASCADE)
-    title = models.CharField(max_length=255, blank=True, null=True)
-    subtitle = models.CharField(max_length=255, blank=True, null=True)
+        Post, on_delete=models.CASCADE, related_name='comments')
+    user = models.ForeignKey(
+        User, on_delete=models.CASCADE, related_name='comments')
+    content = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    parent = models.ForeignKey(
+        'self', null=True, blank=True, on_delete=models.CASCADE, related_name='replies')
+
+    def __str__(self):
+        return f'Comment by {self.user.username} on {self.post.title}'
 
 
-class ContentBlock(models.Model):
-    section = models.ForeignKey(
-        Section, related_name='%(class)ss', on_delete=models.CASCADE)
+class LikeDislike(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    post = models.ForeignKey(
+        Post, on_delete=models.CASCADE, related_name='likes_dislikes')
+    like = models.BooleanField()
 
     class Meta:
-        abstract = True
+        unique_together = ('user', 'post')
+
+    def __str__(self):
+        return f'{"Like" if self.like else "Dislike"} by {self.user.username} on {self.post.title}'
 
 
-class TextBlock(ContentBlock):
-    text = models.TextField()
+class Bookmark(models.Model):
+    user = models.ForeignKey(
+        User, on_delete=models.CASCADE, related_name='bookmarks')
+    post = models.ForeignKey(
+        Post, on_delete=models.CASCADE, related_name='bookmarks')
+    created_at = models.DateTimeField(auto_now_add=True)
 
+    class Meta:
+        unique_together = ('user', 'post')
 
-class ImageBlock(ContentBlock):
-    image = models.ImageField(upload_to='blog/images/')
-    caption = models.CharField(max_length=255, blank=True, null=True)
-
-
-class ListBlock(ContentBlock):
-    LIST_TYPES = [
-        ('b', 'Bullets'),
-        ('1', 'Numbers'),
-        ('A', 'Uppercase Letters'),
-        ('a', 'Lowercase Letters'),
-        ('I', 'Uppercase Roman numbers'),
-        ('i', 'Lowercase Roman numbers'),
-    ]
-
-    items = models.TextField(help_text="Enter each item on a new line.")
-    type = models.CharField(max_length=1, choices=LIST_TYPES, default='b')
-
-    def get_items(self):
-        return self.items.split('\n')
+    def __str__(self):
+        return f'Bookmark by {self.user.username} on {self.post.title}'

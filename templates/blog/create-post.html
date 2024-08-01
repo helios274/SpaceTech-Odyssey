@@ -5,93 +5,25 @@
 Create Post
 {% endblock %}
 
-{% block content %}
-{% include 'components/shared/navbar.html' with create_post='-active' search_bar_visibility='hidden' %}
-<div class="flex justify-center">
-    <div class="flex flex-col space-y-8 w-full lg:w-9/12 xl:w-8/12">
-        <h1 class="text-4xl font-extrabold text-quaternary">Create Blog Post</h1>
-        <form class="form-container" method="post" enctype="multipart/form-data">
-            {% csrf_token %}
-            <div class="post-form-input-container">
-                {{ post_form.as_p }}
-            </div>
-            <div class="tag-input-container">
-                <label for="tags">Tags:</label>
-                <input type="text" id="tag-search" placeholder="Search or add tags">
-                <div id="tag-suggestions" class="hidden"></div>
-                <div id="selected-tags"></div>
-                <input type="hidden" name="tags" id="tags">
-            </div>
-            <div id="formsetContainer" class="content-input-container">
-                <div class="management-form">
-                    {{ section_formset.management_form }}
-                    {{ text_block_formset.management_form }}
-                    {{ image_block_formset.management_form }}
-                    {{ list_block_formset.management_form }}
-                </div>
-                {% for section_form in section_formset %}
-                <div class="section-form">
-                    <h3 class="text-xl font-bold text-quaternary">Section</h3>
-                    {{ section_form.as_p }}
-                    <div class="text-block-formset">
-                        {% for text_block_form in text_block_formset %}
-                        <div class="text-block-form">
-                            {{ text_block_form.as_div }}
-                        </div>
-                        {% endfor %}
-                    </div>
-                    <button type="button" class="add-text-block">Add Text Block</button>
-                    <div class="image-block-formset"></div>
-                    <button type="button" class="add-image-block">Add Image Block</button>
-                    <div class="list-block-formset"></div>
-                    <button type="button" class="add-list-block">Add List Block</button>
-                </div>
-                {% endfor %}
-                <button type="button" id="add-section" class="order-last">Add Section</button>
-            </div>
-            <button type="submit" id="submit-btn">Create Post</button>
-        </form>
-    </div>
-</div>
-
-<script type="text/template" id="section-form-template">
-    <div class="section-form">
-        <h3 class="text-xl font-bold text-quaternary">Section</h3>
-        {{ section_formset.empty_form.as_p|safe }}
-        <div class="text-block-formset"></div>
-        <button type="button" class="add-text-block">Add Text Block</button>
-        <div class="image-block-formset"></div>
-        <button type="button" class="add-image-block">Add Image Block</button>
-        <div class="list-block-formset"></div>
-        <button type="button" class="add-list-block">Add List Block</button>
-        <div class="flex">
-            <button type="button" class="remove-section flex-grow">Remove Section</button>
-        </div>
-    </div>
-</script>
-
-<script type="text/template" id="text-block-form-template">
-    <div class="text-block-form">
-        {{ text_block_formset.empty_form.as_div|safe }}
-        <button type="button" class="remove-text-block">Remove Text Block</button>
-    </div>
-</script>
-
-<script type="text/template" id="image-block-form-template">
-    <div class="image-block-form">
-        {{ image_block_formset.empty_form.as_div|safe }}
-        <button type="button" class="remove-image-block">Remove Image Block</button>
-    </div>
-</script>
-
-<script type="text/template" id="list-block-form-template">
-    <div class="list-block-form">
-        {{ list_block_formset.empty_form.as_div|safe }}
-        <button type="button" class="remove-list-block">Remove List Block</button>
-    </div>
-</script>
+{% block css %}
+<link href="{% static 'css/forms.css' %}" rel="stylesheet">
+<link href="{% static 'css/posts.css' %}" rel="stylesheet">
 {% endblock %}
 
-{% block js %}
-<script src="{% static 'js/create-post.js' %}"></script>
+{% block content %}
+{% include 'components/shared/navbar.html' with position='sticky-top' create_post='active' search_bar_visibility='d-none' %}
+<div class="mlr-0.5 mlr-md-2 mlr-lg-3.5 mlr-xl-7 mb-4">
+    <form action="{% url 'create-post' %}" method="POST" class="d-flex flex-column post-form">
+        <h1 class="head-text">Create Post</h1>
+        {% csrf_token %}
+        {% for field in form %}
+        <div class="d-flex flex-column mb-2 form_control{% if form.title.errors %} errors{% endif %}">
+            {{field.label_tag}}
+            {{field}}
+            {{field.errors}}
+        </div>
+        {% endfor %}
+        <button type="submit mt-2" class="btn-submit mt-2">Create</button>
+    </form>
+</div>
 {% endblock %}

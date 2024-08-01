@@ -1,34 +1,59 @@
 $(document).ready(function () {
-  function getCookie(name) {
-    let cookieValue = null;
-    if (document.cookie && document.cookie !== "") {
-      const cookies = document.cookie.split(";");
-      for (let i = 0; i < cookies.length; i++) {
-        const cookie = cookies[i].trim();
-        // Does this cookie string begin with the name we want?
-        if (cookie.substring(0, name.length + 1) === name + "=") {
-          cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-          break;
-        }
-      }
-    }
-    return cookieValue;
-  }
+  // function getCookie(name) {
+  //   let cookieValue = null;
+  //   if (document.cookie && document.cookie !== "") {
+  //     const cookies = document.cookie.split(";");
+  //     for (let i = 0; i < cookies.length; i++) {
+  //       const cookie = cookies[i].trim();
+  //       // Does this cookie string begin with the name we want?
+  //       if (cookie.substring(0, name.length + 1) === name + "=") {
+  //         cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+  //         break;
+  //       }
+  //     }
+  //   }
+  //   return cookieValue;
+  // }
 
-  const csrftoken = getCookie("csrftoken");
+  // const csrftoken = getCookie("csrftoken");
 
-  function csrfSafeMethod(method) {
-    // these HTTP methods do not require CSRF protection
-    return /^(GET|HEAD|OPTIONS|TRACE)$/.test(method);
-  }
+  // function csrfSafeMethod(method) {
+  //   // these HTTP methods do not require CSRF protection
+  //   return /^(GET|HEAD|OPTIONS|TRACE)$/.test(method);
+  // }
 
-  $.ajaxSetup({
-    beforeSend: function (xhr, settings) {
-      if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
-        xhr.setRequestHeader("X-CSRFToken", csrftoken);
-      }
-    },
+  // $.ajaxSetup({
+  //   beforeSend: function (xhr, settings) {
+  //     if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+  //       xhr.setRequestHeader("X-CSRFToken", csrftoken);
+  //     }
+  //   },
+  // });
+
+  // Model configuration
+  var $modal = $("#modal");
+
+  $("#openModal").on("click", function () {
+    $modal.removeClass("hidden modal-close").addClass("flex modal-open");
   });
+
+  $("#closeModal").on("click", function () {
+    $modal.removeClass("modal-open").addClass("modal-close");
+    setTimeout(function () {
+      $modal.addClass("hidden");
+    }, 300);
+  });
+
+  $(document).on("click", function (e) {
+    if ($(e.target).is($modal) && !$modal.hasClass("hidden")) {
+      $modal.removeClass("modal-open").addClass("modal-close");
+      setTimeout(function () {
+        $modal.addClass("hidden");
+      }, 300);
+    }
+  });
+
+  // Search or create tags configuration
 
   let selectedTags = [];
 
@@ -71,7 +96,13 @@ $(document).ready(function () {
         method: "POST",
         data: {
           name: tagName,
-          csrfmiddlewaretoken: csrftoken,
+          // csrfmiddlewaretoken: csrftoken,
+        },
+        beforeSend: function (xhr) {
+          xhr.setRequestHeader(
+            "X-CSRFToken",
+            $('input[name="csrfmiddlewaretoken"]').val()
+          );
         },
         success: function (data) {
           selectedTags.push(data.name);
@@ -103,105 +134,61 @@ $(document).ready(function () {
     $("#tags").val(selectedTags.join(","));
   }
 
-  $("#id_sections-0-local_id").val(1);
-  $("#id_text_blocks-0-local_section_id").val(1);
-  $("#id_text_blocks-0-text").attr("required", true);
-
-  // Add section
-  $("#add-section").click(function () {
-    var sectionFormIdx = $("#id_sections-TOTAL_FORMS").val();
-    var sectionFormHtml = $("#section-form-template")
-      .html()
-      .replace(/__prefix__/g, sectionFormIdx);
-    $("#formsetContainer").append(sectionFormHtml);
-    $(`#id_sections-${sectionFormIdx}-local_id`).val(
-      parseInt(sectionFormIdx) + 1
-    );
-    $("#id_sections-TOTAL_FORMS").val(parseInt(sectionFormIdx) + 1);
-  });
-  // remove section
-  $(document).on("click", ".remove-section", function () {
-    var sectionFormIdx = $("#id_sections-TOTAL_FORMS").val();
-    $("#id_sections-TOTAL_FORMS").val(parseInt(sectionFormIdx) - 1);
-    var sectionForm = $(this).closest(".section-form");
-    var textBlockCount = sectionForm.find(".text-block-form").length;
-    var textBlockFormIdx = $("#id_text_blocks-TOTAL_FORMS").val();
-    $("#id_text_blocks-TOTAL_FORMS").val(
-      parseInt(textBlockFormIdx) - textBlockCount
-    );
-    var imageBlockCount = sectionForm.find(".image-block-form").length;
-    var imageBlockFormIdx = $("#id_image_blocks-TOTAL_FORMS").val();
-    $("#id_image_blocks-TOTAL_FORMS").val(
-      parseInt(imageBlockFormIdx) - imageBlockCount
-    );
-    var listBlockCount = sectionForm.find(".list-block-form").length;
-    var listBlockFormIdx = $("#id_list_blocks-TOTAL_FORMS").val();
-    $("#id_list_blocks-TOTAL_FORMS").val(
-      parseInt(listBlockFormIdx) - listBlockCount
-    );
-    sectionForm.remove();
+  $(".submit-btn").on("click", function (e) {
+    if (selectedTags.length === 0) {
+      e.preventDefault();
+    }
   });
 
-  // Add text blocks
-  $(document).on("click", ".add-text-block", function () {
-    var textBlockFormIdx = $("#id_text_blocks-TOTAL_FORMS").val();
-    var textBlockFormHtml = $("#text-block-form-template")
-      .html()
-      .replace(/__prefix__/g, textBlockFormIdx);
-    $(this).siblings(".text-block-formset").append(textBlockFormHtml);
-    var localSectionId = $(this).siblings().find('[name$="-local_id"]').val();
-    $(`#id_text_blocks-${textBlockFormIdx}-local_section_id`).val(
-      parseInt(localSectionId)
+  // Blog image upload to cloudinary
+  $("#upload-image").click(function () {
+    var fileInput = $(
+      '<input type="file" accept="image/*" style="display: none;">'
     );
-    $(`#id_text_blocks-${textBlockFormIdx}-text`).attr("required", true);
-    $("#id_text_blocks-TOTAL_FORMS").val(parseInt(textBlockFormIdx) + 1);
-  });
-  // remove text blocks
-  $(document).on("click", ".remove-text-block", function () {
-    $(this).closest(".text-block-form").remove();
-    var textBlockFormIdx = $("#id_text_blocks-TOTAL_FORMS").val();
-    $("#id_text_blocks-TOTAL_FORMS").val(parseInt(textBlockFormIdx) - 1);
-  });
+    fileInput.on("change", function (e) {
+      var file = e.target.files[0];
 
-  // Add image blocks
-  $(document).on("click", ".add-image-block", function () {
-    var imageBlockFormIdx = $("#id_image_blocks-TOTAL_FORMS").val();
-    var imageBlockFormHtml = $("#image-block-form-template")
-      .html()
-      .replace(/__prefix__/g, imageBlockFormIdx);
-    $(this).siblings(".image-block-formset").append(imageBlockFormHtml);
-    var localSectionId = $(this).siblings().find('[name$="-local_id"]').val();
-    $(`#id_image_blocks-${imageBlockFormIdx}-local_section_id`).val(
-      parseInt(localSectionId)
-    );
-    $(`#id_image_blocks-${imageBlockFormIdx}-image`).attr("required", true);
-    $("#id_image_blocks-TOTAL_FORMS").val(parseInt(imageBlockFormIdx) + 1);
-  });
-  // remove image blocks
-  $(document).on("click", ".remove-image-block", function () {
-    $(this).closest(".image-block-form").remove();
-    var imageBlockFormIdx = $("#id_image_blocks-TOTAL_FORMS").val();
-    $("#id_image_blocks-TOTAL_FORMS").val(parseInt(imageBlockFormIdx) - 1);
-  });
+      // Upload image to Django view using AJAX
+      var formData = new FormData();
+      formData.append("image", file);
 
-  // Add list blocks
-  $(document).on("click", ".add-list-block", function () {
-    var listBlockFormIdx = $("#id_list_blocks-TOTAL_FORMS").val();
-    var listBlockFormHtml = $("#list-block-form-template")
-      .html()
-      .replace(/__prefix__/g, listBlockFormIdx);
-    $(this).siblings(".list-block-formset").append(listBlockFormHtml);
-    var localSectionId = $(this).siblings().find('[name$="-local_id"]').val();
-    $(`#id_list_blocks-${listBlockFormIdx}-local_section_id`).val(
-      parseInt(localSectionId)
-    );
-    $(`#id_list_blocks-${listBlockFormIdx}-items`).attr("required", true);
-    $("#id_list_blocks-TOTAL_FORMS").val(parseInt(listBlockFormIdx) + 1);
-  });
-  // remove list blocks
-  $(document).on("click", ".remove-list-block", function () {
-    $(this).closest(".list-block-form").remove();
-    var listBlockFormIdx = $("#id_list_blocks-TOTAL_FORMS").val();
-    $("#id_list_blocks-TOTAL_FORMS").val(parseInt(listBlockFormIdx) - 1);
+      $.ajax({
+        url: "/posts/create-post/upload/post_cover", // Use URL template tag
+        type: "POST",
+        data: formData,
+        processData: false,
+        contentType: false,
+        beforeSend: function (xhr) {
+          xhr.setRequestHeader(
+            "X-CSRFToken",
+            $('input[name="csrfmiddlewaretoken"]').val()
+          );
+        },
+        success: function (response) {
+          if (response.success) {
+            var imageUrl = response.url;
+            var contentTextarea = $("#id_content");
+            var cursorPos = contentTextarea.prop("selectionStart");
+            var content = contentTextarea.val();
+            var newContent =
+              content.substring(0, cursorPos) +
+              `![image description](${imageUrl})${content.substring(
+                cursorPos
+              )}`;
+            contentTextarea.val(newContent);
+            contentTextarea.focus();
+            $("#image_url").val(imageUrl);
+          } else {
+            console.error("Error uploading image:", response.error);
+            // Handle upload errors (optional)
+          }
+        },
+        error: function (err) {
+          console.error("Error:", err);
+          // Handle AJAX errors (optional)
+        },
+      });
+    });
+    fileInput.click();
   });
 });

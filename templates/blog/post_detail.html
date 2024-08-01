@@ -1,0 +1,125 @@
+{% extends '_base.html' %}
+{% load static %}
+
+{% block title %}
+Post
+{% endblock %}
+
+{% block content %}
+{% include 'components/shared/navbar.html'%}
+<button id="scrollBtn" class="rounded-full font-extrabold px-2 py-1 bg-secondary fixed bottom-3 right-4 xl:right-20 shadow-md">
+    <img src="{% static 'icons/arrow-up.svg' %}" class="h-9 w-7 hidden" alt="arrow up" id="arrowUpIcon">
+    <img src="{% static 'icons/arrow-down.svg' %}" class="h-9 w-7" alt="arrow down" id="arrowDownIcon">
+</button>
+
+<div class="post-detail-container flex flex-col items-center xl:items-start xl:flex-row xl:space-x-4 text-quaternary">
+    <div class="post-container flex flex-col bg-white rounded-md shadow-md sm:w-10/12 xl:w-8/12">
+        <div class="flex flex-col items-center w-full h-60 sm:h-64 md:h-72 xl:h-96">
+            <img class="object-cover rounded-t-md h-full w-full" src="{{post.cover_image.url}}" alt="post-thumbnail">
+        </div>
+        <div id="parent1">
+            <div id="postAuthorCard" class="p-2 sm:px-3 md:px-4 space-y-2 sm:space-y-3 md:space-y-4 xl:bg-white xl:rounded-md xl:shadow-md xl:h-fit xl:py-4">
+                <div class="flex flex-row space-x-2 items-center">
+                    <a href="{% url 'profile' post.author.id %}">
+                        <img src="{% if post.author.profile_photo %}
+                                    {{post.author.profile_photo.url}}
+                                    {% else %}
+                                    {% static 'images/profile.png' %}
+                                    {% endif %}" alt="Profile Image" class="w-11 h-11 p-1 xl:w-14 xl:h-14 rounded-full ring-2 ring-quaternary dark:ring-gray-500 mr-2">
+                    </a>
+                    <div class="flex flex-col">
+                        {% if post.author.id == user.id %}
+                        <p class="text-sm xl:text-base font-bold">You</p>
+                        {% else %}
+                        <p class="text-sm xl:text-base font-bold">{{post.author.get_full_name}}</p>
+                        {% endif %}
+                        <p class="text-xs xl:text-sm">{{post.created_at}}</p>
+                        <p class="text-xs xl:text-sm">Last updated: {{post.updated_at}}</p>
+                    </div>
+                </div>
+                {% if post.author.id == user.id %}
+                <div class="grid grid-cols-2 gap-3">
+                    <a class="post-edit-btn" href="{% url 'update_post' post.slug %}">Edit</a>
+                    <button class="post-delete-btn" id="deleteButton">Delete</button>
+                </div>
+                <div class="grid grid-cols-3 border rounded-md border-quaternary">
+                    <p class="flex justify-center space-x-3 py-1 items-center">
+                        <img src="{% static 'icons/like-filled.svg' %}" class="h-5 w-5" alt="like icon">
+                        <span id="likesCount">{{ likes_count }}</span>
+                    </p>
+                    <p class="flex justify-center space-x-3 py-1 items-center">
+                        <img src="{% static 'icons/dislike-filled.svg' %}" class="h-5 w-5" alt="dislike icon">
+                        <span id="likesCount">{{ dislikes_count }}</span>
+                    </p>
+                    <p class="flex justify-center space-x-3 py-1 items-center">
+                        <img src="{% static 'icons/bookmark-filled.svg' %}" class="h-5 w-5" alt="bookmark icon">
+                        <span id="likesCount">{{ bookmarks_count }}</span>
+                    </p>
+                </div>
+                {% else %}
+                <input type="hidden" id="authStatus" value="{{ user.is_authenticated }}">
+                <div class="grid grid-cols-3">
+                    <button type="button" class="flex justify-center border rounded-s-md py-1.5 border-quaternary/80" id="like-button" data-slug="{{ post.slug }}">
+                        <span class="sr-only">Like</span>
+                        <img src="{% static 'icons/like-outline.svg' %}" class="h-5 w-5" alt="like icon" id="likeOutlineIcon">
+                        <img src="{% static 'icons/like-filled.svg' %}" class="h-5 w-5 hidden" alt="like icon" id="likeFilledIcon">
+                    </button>
+                    <button type="button" class="flex justify-center border-t border-b py-1.5 border-quaternary/80" id="dislike-button" data-slug="{{ post.slug }}">
+                        <span class="sr-only">Dislike</span>
+                        <img src="{% static 'icons/dislike-outline.svg' %}" class="h-5 w-5" alt="dislike icon" id="dislikeOutlineIcon">
+                        <img src="{% static 'icons/dislike-filled.svg' %}" class="h-5 w-5 hidden" alt="dislike icon" id="dislikeFilledIcon">
+                    </button>
+                    <button type="button" class="flex justify-center border rounded-e-md py-1.5 border-quaternary/80" id="bookmark-button" data-slug="{{ post.slug }}">
+                        <span class="sr-only">Bookmark</span>
+                        <img src="{% static 'icons/bookmark-outline.svg' %}" class="h-5 w-5" alt="bookmark icon" id="bookmarkOutlineIcon">
+                        <img src="{% static 'icons/bookmark-filled.svg' %}" class="h-5 w-5 hidden" alt="bookmark icon" id="bookmarkFilledIcon">
+                    </button>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        <div class="px-2.5 pt-2.5 sm:px-3 sm:pt-3 md:pt-4 md:px-4 flex flex-col space-y-5">
+            <h1 class="text-2xl sm:text-3xl font-bold xl:text-4xl">{{post.title}}</h1>
+            <p class="font-medium xl:text-lg">{{post.description}}</p>
+            <div class="post-tag-container">
+                {% for tag in post.tags.all %}
+                <a href="{% url 'tag' tag.slug %}" class="tag">{{tag}}</a>
+                {% endfor %}
+            </div>
+            <div class="prose max-w-full">
+                {{ post.content_html|safe }}
+            </div>
+            <div class="comment-section">
+
+            </div>
+        </div>
+    </div>
+
+    <div id="parent2" class="sticky top-2 flex flex-col w-4/12">
+    </div>
+
+</div>
+
+<!-- Modal -->
+<div id="deleteModal" class="fixed inset-0 hidden h-screen">
+    <div class="flex items-center justify-center min-h-screen bg-gray-900 bg-opacity-50 modal">
+        <div class="bg-white rounded-lg overflow-hidden shadow-xl transform transition-all sm:max-w-lg sm:w-full">
+            <div class="px-4 py-5 sm:p-6">
+                <h3 class="text-lg leading-6 font-semibold text-gray-900">Post Delete Confirmation</h3>
+                <div class="mt-2">
+                    <p class="text-sm text-gray-500">Are you sure you want to delete this post? This action cannot be undone.</p>
+                </div>
+                <div class="mt-5 sm:mt-6 flex justify-end space-x-2">
+                    <button id="cancelButton" type="button" class="bg-gray-500 text-white px-4 py-2 rounded">Cancel</button>
+                    <a href="{% url 'delete_post' post.slug %}" id="confirmDelete" type="button" class="bg-tertiary text-white px-4 py-2 rounded">Yes, Delete</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block js %}
+<script src="{% static 'js/post-details.js' %}"></script>
+{% endblock %}

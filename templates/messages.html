@@ -1,13 +1,10 @@
 {% if messages %}
-<div class="d-flex justify-content-center">
-    <div class="messages" id="messages">
-        {% for message in messages %}
-        <div {% if message.tags %}
-            class="alert alert-sm alert-{{ message.tags }} rounded-4 alert-dismissible fade show py-3" {% endif %}>
-            {{ message }}
-            <button type="button" class="btn-close text-end" data-bs-dismiss="alert" aria-label="Close"></button>
-        </div>
-        {% endfor %}
+<div id="messageContainer">
+    {% for message in messages %}
+    <div class="message-body message-{{ message.tags }} message-enter" data-message-id="{{ message.id }}">
+        <p>{{ message }}</p>
+        <button type="button" class="message-close-btn" data-close-id="{{ message.id }}">X</button>
     </div>
+    {% endfor %}
 </div>
 {% endif %}

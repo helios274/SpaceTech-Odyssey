@@ -2,18 +2,18 @@
 
 <nav class="bg-primary mb-4">
     <div class="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto py-2 md:py-3">
-        <a class="py-2" href="{% url 'index' %}">
+        <a class="py-2 md:ms-0" href="{% url 'index' %}">
             <span class="hidden md:block xl:text-2xl lg:text-xl md:text-lg font-bold font-edu drop-shadow">SpaceTech Odyssey</span>
-            <img class="md:hidden block" src="{% static 'images/STO.png' %}" alt="logo" height="31px" width="31px">
+            <span class="md:hidden block font-extrabold font-edu drop-shadow px-1">STO</span>
         </a>
 
 
-        <form class="flex items-center mx-auto {{search_bar_visibility}}">
-            <label for="simple-search" class="sr-only">Search</label>
-            <input type="text" id="simple-search" class="bg-primary border border-r-0 border-quaternary text-quaternary/80 text-sm rounded-l-lg focus:outline-none focus:bg-secondary/50 w-56 ps-2 p-2"
+        <form action="{% url 'search-post' %}" method="post" class="search-bar-container flex flex-row {{search_bar_visibility}}">
+            {% csrf_token %}
+            <label for="searchInput" class="sr-only">Search</label>
+            <input type="text" name="search_field" id="searchInput" class="bg-white border border-r-0 border-quaternary text-quaternary/80 text-sm focus:outline-none ps-2 p-2 w-full"
                 placeholder="Search keywords..." required />
-            <button type="submit"
-                class="py-2.5 px-2 text-sm font-medium text-quaternary bg-primary rounded-r-lg border border-quaternary hover:bg-secondary focus:ring-4 focus:outline-none focus:ring-blue-300">
+            <button type="submit" class="py-2.5 px-2 text-sm font-medium text-primary bg-secondary border border-quaternary hover:bg-secondary/50 focus:ring-4 focus:outline-none focus:ring-blue-300">
                 <img class="w-5 h-4" src="{% static 'icons/search.svg' %}" alt="search-icon">
                 <span class="sr-only">Search</span>
             </button>
@@ -26,9 +26,13 @@
         </button>
         <div class="nav-menu" id="navbar-menu">
             <div class="flex flex-row space-x-3">
+                <button class="bg-primary border-2 border-quaternary rounded-md px-3 {{search_bar_visibility}} hidden" id="searchToggleBtn" type="button">
+                    <img class="w-5 h-4" src="{% static 'icons/search.svg' %}" alt="search-icon">
+                </button>
                 <a class="nav-item{{all_posts}}" href="{% url 'all-posts' %}">All Posts</a>
                 {% if user.is_authenticated %}
-                <a class="nav-item{{create_post}}" href="{% url 'create-post' %}">Create Post</a>
+                <a class="nav-item{{create_post}}" href="{% url 'create_post' %}">Create Post</a>
+                <a class="nav-item{{profile}}" href="{% url 'profile' user.id %}">My Profile</a>
                 <form class="nav-item" action="{% url 'logout' %}" method="POST">
                     {% csrf_token %}
                     <button class="logout-btn" type="submit">Logout</button>
@@ -43,7 +47,8 @@
             <div class="flex flex-col space-y-2">
                 <a class="nav-item{{all_posts}}" href="{% url 'all-posts' %}">All Posts</a>
                 {% if user.is_authenticated %}
-                <a class="nav-item{{create_post}}" href="{% url 'create-post' %}">Create Post</a>
+                <a class="nav-item{{profile}}" href="{% url 'profile' user.id %}">My Profile</a>
+                <a class="nav-item{{create_post}}" href="{% url 'create_post' %}">Create Post</a>
                 <form class="nav-item" action="{% url 'logout' %}" method="POST">
                     {% csrf_token %}
                     <button class="logout-btn" type="submit">Logout</button>
@@ -54,5 +59,17 @@
                 {% endif %}
             </div>
         </div>
+    </div>
+    <div class="hidden justify-center xl:hidden mt-3" id="searchBarContainer">
+        <form action="{% url 'search-post' %}" method="post" class="search-bar-container flex flex-row {{search_bar_visibility}}">
+            {% csrf_token %}
+            <label for="searchInput" class="sr-only">Search</label>
+            <input type="text" name="search_field" id="searchInput" class="bg-white border border-r-0 border-quaternary text-quaternary/80 text-sm focus:outline-1 w-56 ps-2 p-2"
+                placeholder="Search keywords..." required />
+            <button type="submit" class="py-2.5 px-2 text-sm font-medium text-primary bg-secondary border border-quaternary hover:bg-secondary/50 focus:ring-4 focus:outline-none focus:ring-blue-300">
+                Search
+                <span class="sr-only">Search</span>
+            </button>
+        </form>
     </div>
 </nav>

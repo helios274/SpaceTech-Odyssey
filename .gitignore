@@ -1,8 +1,8 @@
 __pycache__/
 */__pycache__/
+*/migrations/__pycache__
 .venv
 .env
-.ebextensions
 code.zip
 vercel.json
 
@@ -10,5 +10,9 @@ media
 node_modules
 package*.json
 tailwind.config.js
+cors.json
+app.yaml
+sto-admin-sa.json
 
 .vscode
+.gcloudignore
