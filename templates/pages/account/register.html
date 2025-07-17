@@ -1,0 +1,46 @@
+{% extends '_base.html' %}
+
+{% load static %}
+{% load compress %}
+
+{% block title %}
+Register to SpaceTech Odyssey
+{% endblock %}
+
+{% block content %}
+{% include 'components/navbar.html' with register='-active' search_bar_visibility='hidden' %}
+
+<div class="flex flex-col items-center">
+    <h1 class="text-center text-2xl sm:text-4xl font-bold text-quaternary mb-7 sm:mb-9">Join SpaceTech Odyssey</h1>
+    <form action="{% url 'register' %}" method="POST" id="register-form" class="flex flex-col space-y-4 sm:grid sm:grid-cols-2 sm:gap-4 w-full md:w-9/12 lg:w-7/12" id="registerForm">
+        {% csrf_token %}
+        {% for field in form %}
+        <div class="form-control{% if field.errors %} errors{% endif %}">
+            {{field.label_tag}}
+            {% if field.name == "password" %}
+            <div class="relative form-control space-y-0">
+                {{field}}
+                <button type="button" class="absolute inset-y-0 right-0 px-3 flex items-center text-sm leading-6" id="togglePassword">
+                    <img class="h-4 w-4" id="eye-off" src="{% static 'icons/eye-off.svg' %}" alt="eye">
+                    <img class="h-4 w-4 hidden" id="eye" src="{% static 'icons/eye.svg' %}" alt="eye">
+                </button>
+            </div>
+            {% else %}
+            {{field}}
+            {% endif %}
+            <p class="help-text">{{field.help_text}}</p>
+            {{field.errors}}
+        </div>
+        {% endfor %}
+
+        <button type="submit" class="submit-btn col-span-2 mt-3">Register</button>
+    </form>
+</div>
+
+{% endblock %}
+
+{% block js %}
+{% compress js file register %}
+<script src="{% static 'js/register.js' %}"></script>
+{% endcompress %}
+{% endblock %}

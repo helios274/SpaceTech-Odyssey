@@ -1,0 +1,113 @@
+{% extends '_base.html' %}
+{% load static %}
+{% load compress %}
+
+{% block content %}
+{% include 'components/navbar.html' %}
+<div class="space-y-3">
+    {% if not user.is_authenticated %}
+    <section class="flex flex-col">
+        <h1 class="text-center max-[381px]:flex max-[381px]:flex-col">
+            <span class="text-secondary font-bold text-2xl sm:text-3xl md:text-4xl lg:text-6xl mr-2">Welcome to</span>
+            <span class="text-tertiary font-edu font-extrabold text-3xl sm:text-4xl md:text-5xl lg:text-7xl">SpaceTech Odyssey</span>
+        </h1>
+        <p class="text-center text-sm sm:text-base lg:text-lg text-quaternary font-semibold sm:mx-5 md:mx-10 lg:mx-16 mt-5">Journey through the cosmos of space technology, featuring articles
+            on
+            space exploration,
+            satellite
+            technology, and astronomy.</p>
+    </section>
+    {% endif %}
+    {% include 'components/carousel.html' %}
+    <div class="flex flex-col md:flex-row md:space-x-3 lg:space-x-4 xl:space-x-5">
+        <section class="flex flex-col md:w-6/12">
+            <h1 class="text-xl font-bold mb-2">Recent posts</h1>
+            {% for post in recent_posts %}
+            <div class="shadow-md rounded-md mb-3 md:flex">
+                <img src="{{post.cover_image.url}}" alt="Slide Image 1" class="hidden md:block w-4/12 max-h-52 object-cover">
+                <div class="flex flex-col space-y-2 bg-secondary/30 p-2 w-full md:w-8/12">
+                    <h2 class="text-lg font-medium lg:font-bold">
+                        <a href="{% url 'post_detail' post.slug %}">{{ post.title }}</a>
+                    </h2>
+                    <p class="text-sm text-gray-500">{{ post.created_at|date:"F d, Y" }}</p>
+                    <p class="text-sm lg:text-base text-gray-700 max-h-[60px] truncate-text truncate-text-3 md:truncate-text-2">{{ post.description }}</p>
+                    <a href="{% url 'post_detail' post.slug %}" class="font-semibold text-sm text-center">Read more</a>
+                </div>
+            </div>
+            {% endfor %}
+            <a class="py-1.5 text-center rounded-md bg-quaternary text-primary hover:shadow-md" type="button" href="{% url 'all-posts' %}">Show all posts</a>
+        </section>
+        <div class="flex flex-col md:w-6/12">
+            <section class="flex flex-col">
+                <h1 class="text-xl font-bold mb-2">Most discussed</h1>
+                {% for post in most_commented_posts %}
+                <div class="shadow-md rounded-md mb-3 flex h-[128px]">
+                    <img src="{{post.cover_image.url}}" alt="post card thumbnail" class="w-5/12 object-fill">
+                    <div class="flex flex-col space-y-2 bg-secondary/30 p-2 w-7/12">
+                        <h2 class="text-lg font-medium">
+                            <a class="h-[84px] truncate-text truncate-text-3" href="{% url 'post_detail' post.slug %}">{{ post.title }}</a>
+                        </h2>
+                        <p class="text-sm text-gray-500">{{ post.created_at|date:"F d, Y" }}</p>
+                    </div>
+                </div>
+                {% endfor %}
+            </section>
+            <section id="liked-posts-section" class="pt-2 mt-2 shadow-md overflow-hidden min-[450px]:w-10/12 sm:w-8/12 md:w-full">
+                <div class="flex items-end ms-2">
+                    <h1 class="text-xl font-bold mb-2">Top liked posts</h1>
+                    <div class="inline-flex ms-auto space-x-0">
+                        <button type="button" class="card-toggle-btn" data-card-num="1">1</button>
+                        <button type="button" class="card-toggle-btn" data-card-num="2">2</button>
+                        <button type="button" class="card-toggle-btn" data-card-num="3">3</button>
+                        <button type="button" class="card-toggle-btn" data-card-num="4">4</button>
+                        <button type="button" class="card-toggle-btn" data-card-num="5">5</button>
+                    </div>
+                </div>
+                <div id="post-cards-container">
+                    {% for post in top_liked_posts %}
+                    <div class="post-card-slide flex flex-col xl:flex-row min-w-full overflow-hidden">
+                        <div class="h-[200px] flex justify-center bg-black xl:order-last xl:w-5/12 xl:h-full">
+                            <img src="{{post.cover_image.url}}" alt="post card thumbnail" class=" object-fit">
+                        </div>
+                        <div class="flex flex-col space-y-2 bg-secondary p-2 xl:w-7/12 xl:space-y-0 xl:justify-between">
+                            <h2 class="text-lg font-medium xl:text-xl xl:font-bold">
+                                <a class="h-[56px] truncate-text truncate-text-2 xl:h-fit xl:truncate-text-3" href="{% url 'post_detail' post.slug %}">{{ post.title }}</a>
+                            </h2>
+                            <p class="hidden xl:block h-[72px] truncate-text truncate-text-3">{{ post.description }}</p>
+                            <div class="hidden xl:flex items-center">
+                                <a href="{% url 'profile' post.author.id %}">
+                                    <img src="{% if post.author.profile_photo %}
+                                        {{post.author.profile_photo.url}}
+                                        {% else %}
+                                        {% static 'images/profile.png' %}
+                                        {% endif %}" alt="Profile Image" class="w-9 sm:w-10 h-9 sm:h-10 p-1 rounded-full ring-2 ring-primary mr-2">
+                                </a>
+                                <div>
+                                    <a href="{% url 'profile' post.author.id %}">
+                                        {% if post.author.id == user.id %}
+                                        <p class="text-sm font-bold">You</p>
+                                        {% else %}
+                                        <p class="text-sm font-bold">{{post.author.get_full_name}}</p>
+                                        {% endif %}
+                                    </a>
+                                    <p class="text-xs sm:text-sm text-primary">{{ post.created_at|date:"F d, Y" }}</p>
+                                </div>
+                            </div>
+                            <p class="text-sm text-primary block xl:hidden">{{ post.created_at|date:"F d, Y" }}</p>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </section>
+        </div>
+    </div>
+
+</div>
+
+{% endblock %}
+
+{% block js %}
+{% compress js file post_card_slider %}
+<script src="{% static 'js/post_card_slider.js' %}"></script>
+{% endcompress %}
+{% endblock %}

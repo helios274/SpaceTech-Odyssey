@@ -3,5 +3,5 @@ from django.conf import settings
 
 
 class StaticStorage(GoogleCloudStorage):
-    location = 'static'
+    location = 'static-files'
     bucket_name = settings.GS_BUCKET_NAME

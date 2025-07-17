@@ -1,5 +1,5 @@
 $(document).ready(function () {
-  // Like, dislike, and bookmark handlers
+  // get csrf token fro mthe cookie
   function getCookie(name) {
     var cookieValue = null;
     if (document.cookie && document.cookie !== "") {
@@ -20,6 +20,7 @@ $(document).ready(function () {
     return /^(GET|HEAD|OPTIONS|TRACE)$/.test(method);
   }
 
+  // set the CSRF token globally for all requests
   $.ajaxSetup({
     beforeSend: function (xhr, settings) {
       if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
@@ -28,6 +29,8 @@ $(document).ready(function () {
     },
   });
 
+  // Like, dislike, and bookmark
+  // Like, dislike, and bookmark icons handler
   function updateIcons(status) {
     if (status.liked) {
       $("#likeOutlineIcon").addClass("hidden");
@@ -68,6 +71,7 @@ $(document).ready(function () {
   if ($("#authStatus").val() === "True") {
     fetchPostStatus();
 
+    // Like, dislike, and bookmark functionality
     $("#like-button").on("click", function () {
       var slug = $(this).data("slug");
       $.ajax({
@@ -128,27 +132,23 @@ $(document).ready(function () {
     });
   }
 
-  // Modal
+  // Delete psot confirmation modal functionality
   function openModal() {
     $("#deleteModal").removeClass("hidden");
     setTimeout(() => $("#deleteModal .modal").addClass("modal-show"), 10); // Adding a slight delay for transition effect
   }
-
   function closeModal() {
     $("#deleteModal .modal").removeClass("modal-show");
     setTimeout(() => $("#deleteModal").addClass("hidden"), 300); // Match this duration with the CSS transition duration
   }
-
   // Show the modal when the delete button is clicked
   $("#deleteButton").click(function () {
     openModal();
   });
-
   // Close the modal when the cancel button is clicked
   $("#cancelButton").click(function () {
     closeModal();
   });
-
   // Close the modal when clicking outside the modal content
   $(document).click(function (event) {
     if (!$(event.target).closest(".sm\\:max-w-lg, #deleteButton").length) {
@@ -187,8 +187,6 @@ $(document).ready(function () {
     }
   });
 
-  $(".post-content p").has("img").addClass("flex justify-center");
-
   function moveElement() {
     var windowWidth = $(window).width();
     var $element = $("#postAuthorCard");
@@ -205,10 +203,8 @@ $(document).ready(function () {
       }
     }
   }
-
   // Run the function on initial load
   moveElement();
-
   // Run the function on window resize
   $(window).resize(function () {
     moveElement();

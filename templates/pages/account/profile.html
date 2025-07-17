@@ -7,9 +7,9 @@ Profile
 
 {% block content %}
 {% if user.id == user_profile.id %}
-{% include 'components/shared/navbar.html' with profile='-active' search_bar_visibility='hidden' %}
+{% include 'components/navbar.html' with profile='-active' search_bar_visibility='hidden' %}
 {% else %}
-{% include 'components/shared/navbar.html' with search_bar_visibility='hidden' %}
+{% include 'components/navbar.html' with search_bar_visibility='hidden' %}
 {% endif %}
 <div class="flex flex-col space-y-5 items-center xl:flex-row xl:space-x-4 xl:items-start xl:space-y-0">
     <div class="profile-container p-2 rounded-md bg-white shadow-md text-quaternary 
@@ -41,13 +41,17 @@ Profile
         {% if page_object %}
         <h3 class="text-xl font-extrabold xl:text-2xl">Posts ({{posts_count}})</h3>
         {% for post in page_object %}
-        {% include 'components/post-card.html' %}
+        {% include 'components/post_card.html' %}
         {% endfor %}
         {% if posts_count > 8 %}
         {% include 'components/pagination.html' %}
         {% endif %}
         {% else %}
-        <h3 class="text-4xl font-bold text-secondary">You don't have any posts</h3>
+        {% if user.is_authenticated %}
+        <h3 class="text-4xl font-bold">You don't have any posts</h3>
+        {% else %}
+        <h3 class="text-4xl font-bold">No posts</h3>
+        {% endif %}
         {% endif %}
     </div>
 </div>

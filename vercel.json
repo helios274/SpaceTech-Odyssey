@@ -8,7 +8,7 @@
   "routes": [
     {
       "src": "/static/(.*)",
-      "dest": "https://spacetech-bucket-2.s3.amazonaws.com/static/$1"
+      "dest": "https://storage.googleapis.com/web-apps-123/static/$1"
     },
     {
       "handle": "filesystem"

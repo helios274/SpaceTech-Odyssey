@@ -102,4 +102,16 @@ jQuery(function () {
   });
   resetAutoSlide();
   moveToSlide(0);
+
+  $("#carousel > div").each(function () {
+    var slide = $(this);
+    var imgUrl = slide.data("img-url");
+    window.addEventListener("resize", function () {
+      if (window.innerWidth < 768) {
+        slide.children("div").css("background-image", `url('${imgUrl}')`);
+      } else {
+        slide.children("div").css("background-image", "none");
+      }
+    });
+  });
 });

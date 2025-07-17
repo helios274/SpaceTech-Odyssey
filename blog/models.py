@@ -52,7 +52,7 @@ class Comment(models.Model):
         'self', null=True, blank=True, on_delete=models.CASCADE, related_name='replies')
 
     def __str__(self):
-        return f'Comment by {self.user.username} on {self.post.title}'
+        return f'Comment by {self.user.first_name} on {self.post.title}'
 
 
 class LikeDislike(models.Model):

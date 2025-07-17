@@ -1,18 +1,21 @@
 {% extends '_base.html' %}
+
 {% load static %}
+{% load compress %}
 
 {% block title %}
 Post
 {% endblock %}
 
 {% block content %}
-{% include 'components/shared/navbar.html'%}
+{% include 'components/navbar.html' %}
+
 <button id="scrollBtn" class="rounded-full font-extrabold px-2 py-1 bg-secondary fixed bottom-3 right-4 xl:right-20 shadow-md">
     <img src="{% static 'icons/arrow-up.svg' %}" class="h-9 w-7 hidden" alt="arrow up" id="arrowUpIcon">
     <img src="{% static 'icons/arrow-down.svg' %}" class="h-9 w-7" alt="arrow down" id="arrowDownIcon">
 </button>
 
-<div class="post-detail-container flex flex-col items-center xl:items-start xl:flex-row xl:space-x-4 text-quaternary">
+<div class="post-detail-container flex flex-col items-center xl:items-start xl:flex-row xl:space-x-4 text-quaternary" data-post-id="{{ post.id }}">
     <div class="post-container flex flex-col bg-white rounded-md shadow-md sm:w-10/12 xl:w-8/12">
         <div class="flex flex-col items-center w-full h-60 sm:h-64 md:h-72 xl:h-96">
             <img class="object-cover rounded-t-md h-full w-full" src="{{post.cover_image.url}}" alt="post-thumbnail">
@@ -34,7 +37,7 @@ Post
                         <p class="text-sm xl:text-base font-bold">{{post.author.get_full_name}}</p>
                         {% endif %}
                         <p class="text-xs xl:text-sm">{{post.created_at}}</p>
-                        <p class="text-xs xl:text-sm">Last updated: {{post.updated_at}}</p>
+                        <p class="text-xs xl:text-sm">Last updated: {{post.updated_at|timesince}} ago</p>
                     </div>
                 </div>
                 {% if post.author.id == user.id %}
@@ -86,12 +89,11 @@ Post
                 <a href="{% url 'tag' tag.slug %}" class="tag">{{tag}}</a>
                 {% endfor %}
             </div>
-            <div class="prose max-w-full">
+            <div class="prose max-w-full post-content">
                 {{ post.content_html|safe }}
             </div>
-            <div class="comment-section">
-
-            </div>
+            <br>
+            {% include 'components/comment_section.html' %}
         </div>
     </div>
 
@@ -100,7 +102,7 @@ Post
 
 </div>
 
-<!-- Modal -->
+<!-- Delete post confirmation Modal -->
 <div id="deleteModal" class="fixed inset-0 hidden h-screen">
     <div class="flex items-center justify-center min-h-screen bg-gray-900 bg-opacity-50 modal">
         <div class="bg-white rounded-lg overflow-hidden shadow-xl transform transition-all sm:max-w-lg sm:w-full">
@@ -121,5 +123,8 @@ Post
 {% endblock %}
 
 {% block js %}
-<script src="{% static 'js/post-details.js' %}"></script>
+{% compress js file post_detail %}
+<script src="{% static 'js/post_detail.js' %}"></script>
+<script src="{% static 'js/comment_reply.js' %}"></script>
+{% endcompress %}
 {% endblock %}

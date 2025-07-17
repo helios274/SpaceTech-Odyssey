@@ -11,4 +11,8 @@ jQuery(function () {
       passwordField.attr("type", "password");
     }
   });
+
+  $("#register-form").on("submit", function () {
+    $(".submit-btn").text("Registering...");
+  });
 });

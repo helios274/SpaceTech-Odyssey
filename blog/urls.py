@@ -23,4 +23,14 @@ urlpatterns = [
          csrf_exempt(views.search_tags), name='search-tags'),
     path('posts/tags/add-tag', views.add_tag, name='add-tag'),
 
+    path('posts/<int:post_id>/comments/add/',
+         views.add_comment, name='add_comment'),
+    path('posts/<int:post_id>/comments/',
+         views.load_comments, name='load_comments'),
+    path('comments/<int:comment_id>/replies/',
+         views.load_replies, name='load_replies'),
+    path('comments/<int:comment_id>/edit/',
+         views.edit_comment, name='edit_comment'),
+    path('comments/<int:comment_id>/delete/',
+         views.delete_comment, name='delete_comment'),
 ]

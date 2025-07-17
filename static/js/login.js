@@ -10,4 +10,8 @@ jQuery(function () {
       passwordField.attr("type", "password");
     }
   });
+
+  $("#login-form").on("submit", function () {
+    $(".submit-btn").text("Loggin in...");
+  });
 });

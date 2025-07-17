@@ -1,18 +1,24 @@
 __pycache__/
 */__pycache__/
 */migrations/__pycache__
-.venv
+.sto-venv
 .env
+.env-prod
 code.zip
 vercel.json
+db.sqlite3
 
 media
 node_modules
+static-files
 package*.json
 tailwind.config.js
 cors.json
 app.yaml
 sto-admin-sa.json
+vercel.json
 
 .vscode
 .gcloudignore
+.gitignore
+.env-prod

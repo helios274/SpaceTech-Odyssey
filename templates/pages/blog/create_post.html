@@ -1,0 +1,79 @@
+{% extends '_base.html' %}
+{% load static %}
+{% load compress %}
+
+{% block title %}
+Create Post
+{% endblock %}
+
+{% block content %}
+{% include 'components/navbar.html' with create_post='-active' search_bar_visibility='hidden' %}
+<div class="loader-container hidden" id="upload-loader">
+    <div class="loader"></div>
+</div>
+<div class="create-post-form-container text-quaternary">
+    <div class="flex flex-col w-full sm:w-10/12 md:w-9/12 lg:w-8/12 xl:w-8/12 border-0 rounded-md bg-white shadow-md p-4">
+        <h1 class="block md:hidden text-xl font-extrabold">Create Post</h1>
+        <hr class="block md:hidden">
+        <form method="post" action="{% url 'create_post' %}" enctype="multipart/form-data" id="post-form">
+            {% csrf_token %}
+            <div class="form-control">
+                <label>{{ form.cover_image.label }}</label>
+                {{ form.cover_image }}
+            </div>
+            <div class="form-control">
+                <label>{{ form.title.label }}</label>
+                {{ form.title }}
+            </div>
+            <div class="tag-input-container">
+                <label class="font-semibold">Tags:</label>
+                <input type="text" id="tag-search" placeholder="Search or add tags">
+                <div id="tag-suggestions" class="hidden"></div>
+                <div id="selected-tags"></div>
+                <input type="hidden" name="tags" id="tags">
+            </div>
+            <div class="form-control">
+                <label>{{ form.description.label }}</label>
+                {{ form.description }}
+            </div>
+            <div class="flex space-x-2">
+                <button class="upload-btn" type="button" id="upload-image">Upload Image</button>
+                <button class="markdown-btn block xl:hidden" type="button" id="openModal">Markdown Syntax</button>
+            </div>
+            <input type="hidden" name="image_url" id="image_url">
+            <div class="form-control">
+                <label>{{ form.content.label }}</label>
+                {{ form.content }}
+            </div>
+            <button type="submit" class="submit-btn flex justify-center items-center">Publish Post
+                <div class="submit-loader ms-2 hidden"></div>
+            </button>
+        </form>
+
+    </div>
+    <div class="sticky top-2 hidden xl:flex flex-col w-4/12 border-0 rounded-md bg-white shadow-md p-2 space-y-3">
+        <h3 class="font-semibold text-lg text-secondary">Common markdown syntax</h3>
+        {% include 'components/markdown_syntax_table.html' %}
+    </div>
+</div>
+
+<div id="modal" class="fixed inset-0 hidden items-center justify-center bg-black bg-opacity-50 z-50 modal modal-close">
+    <div class="bg-white rounded-lg overflow-hidden shadow-lg transform transition-all w-11/12 sm:max-w-lg sm:w-full">
+        <div class="p-6">
+            <div class="flex justify-center items-center">
+                <h2 class="text-2xl font-semibold text-secondary">Common markdown syntax</h2>
+                <button id="closeModal" class="px-3 rounded-md text-tertiary text-2xl font-bold ms-auto hover:bg-tertiary/20">X</button>
+            </div>
+            <hr>
+            {% include 'components/markdown_syntax_table.html' %}
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block js %}
+{% compress js file create_post %}
+<script src="{% static 'js/create_post.js' %}"></script>
+{% endcompress %}
+{% endblock %}

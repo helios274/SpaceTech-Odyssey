@@ -6,7 +6,7 @@ All Posts
 {% endblock %}
 
 {% block content %}
-{% include 'components/shared/navbar.html' with all_posts='-active' %}
+{% include 'components/navbar.html' with all_posts='-active' %}
 
 <div class="mt-6 md:mt-10 xl:px-24 flex flex-col space-y-5">
     {% if search_str %}
@@ -17,7 +17,7 @@ All Posts
     <h1 class="text-2xl font-extrabold text-center md:hidden">All posts</h1>
     {% endif %}
     {% for post in page_object %}
-    {% include 'components/post-card.html' %}
+    {% include 'components/post_card.html' %}
     {% endfor %}
     {% if posts_count > 8 %}
     {% include 'components/pagination.html' %}

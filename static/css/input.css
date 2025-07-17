@@ -21,6 +21,15 @@
   background-color: #0c1844;
 }
 
+#post-cards-container {
+  display: flex;
+  transition: transform 0.5s ease-in-out;
+}
+.post-card-slide {
+  min-width: 100%;
+  transition: transform 0.5s ease-in-out;
+}
+
 .blur-bg {
   filter: blur(10px);
   -webkit-filter: blur(10px);
@@ -49,6 +58,136 @@
 .message-exit-active {
   opacity: 0;
   transform: translateY(-10px);
+}
+
+.show-replies {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+.show-replies .arrow {
+  display: inline-block;
+  margin-right: 10px;
+  transition: transform 0.3s ease;
+}
+.show-replies.showing .arrow {
+  transform: rotate(180deg);
+}
+
+.animate-spin-icon {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.loader-container {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+/* HTML: <div class="loader"></div> */
+.loader {
+  width: fit-content;
+  font-weight: bold;
+  font-family: monospace;
+  font-size: 30px;
+  background: radial-gradient(circle closest-side, #000 94%, #0000)
+    right/calc(200% - 1em) 100%;
+  animation: l24 1s infinite alternate linear;
+}
+.loader::before {
+  content: "Uploading...";
+  line-height: 1em;
+  color: #0000;
+  background: inherit;
+  background-image: radial-gradient(circle closest-side, #fff 94%, #000);
+  -webkit-background-clip: text;
+  background-clip: text;
+}
+
+@keyframes l24 {
+  100% {
+    background-position: left;
+  }
+}
+
+/* submit-loader */
+/* HTML: <div class="loader"></div> */
+.submit-loader {
+  width: 30px;
+  aspect-ratio: 2;
+  --_g: no-repeat radial-gradient(circle closest-side, #fff5e1 90%, #fff5e100);
+  background: var(--_g) 0% 50%, var(--_g) 50% 50%, var(--_g) 100% 50%;
+  background-size: calc(100% / 3) 50%;
+  animation: l3 1s infinite linear;
+}
+@keyframes l3 {
+  20% {
+    background-position: 0% 0%, 50% 50%, 100% 50%;
+  }
+  40% {
+    background-position: 0% 100%, 50% 0%, 100% 50%;
+  }
+  60% {
+    background-position: 0% 50%, 50% 100%, 100% 0%;
+  }
+  80% {
+    background-position: 0% 50%, 50% 50%, 100% 100%;
+  }
+}
+
+.truncate-text {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: normal; /* Ensures multi-line truncation */
+}
+
+.truncate-text-1 {
+  -webkit-line-clamp: 1;
+}
+
+.truncate-text-2 {
+  -webkit-line-clamp: 2;
+}
+
+.truncate-text-3 {
+  -webkit-line-clamp: 3;
+}
+
+@media (min-width: 768px) {
+  .md\:truncate-text-2 {
+    -webkit-line-clamp: 2;
+  }
+  .md\:truncate-text-3 {
+    -webkit-line-clamp: 3;
+  }
+}
+
+@media (min-width: 480px) {
+  .min-\[480px\]\:truncate-text-3 {
+    -webkit-line-clamp: 3;
+  }
+}
+
+@media (min-width: 1280px) {
+  .xl\:truncate-text-3 {
+    -webkit-line-clamp: 3;
+  }
+  .xl\:.truncate-text-4 {
+    -webkit-line-clamp: 3;
+  }
 }
 
 @layer components {
@@ -88,11 +227,11 @@
   }
 
   .nav-toggle-btn {
-    @apply inline-flex items-center mr-1 p-2 w-10 h-10 justify-center text-sm text-quaternary rounded-lg md:hidden hover:bg-secondary focus:outline-none focus:ring-2 focus:ring-quaternary;
+    @apply inline-flex items-center ms-3 mr-1 px-2 py-1.5 w-10 h-10 justify-center text-sm text-quaternary rounded-lg hover:bg-secondary focus:outline-none focus:ring-2 focus:ring-quaternary;
   }
 
   .nav-menu {
-    @apply hidden w-full md:block md:w-auto;
+    @apply hidden w-full md:block md:w-auto ms-auto;
   }
 
   .nav-item {
@@ -107,13 +246,22 @@
 
   .navbar-dropdown {
     @apply absolute right-3 sm:right-4 top-14 mt-2 w-11/12 min-[550px]:w-9/12 min-[550px]:left-auto sm:w-2/6 
-    rounded-lg bg-white shadow-lg;
+    rounded-lg bg-white shadow-lg z-[9999];
   }
 
   /* Carousel classes */
 
   .carousel-slide {
     @apply min-w-full flex flex-col md:flex-row bg-secondary/85 overflow-hidden shadow-md;
+  }
+
+  /* Post card slider */
+  .card-toggle-btn {
+    @apply px-3.5 py-1.5 bg-secondary text-primary font-bold;
+  }
+
+  .card-toggle-btn-active {
+    @apply px-3.5 py-1.5 bg-quaternary text-primary font-bold;
   }
 
   .form-control {
@@ -147,8 +295,7 @@
     @apply text-xs mt-1;
   }
   .submit-btn {
-    @apply py-1.5 font-bold border-2 border-quaternary rounded-md text-quaternary hover:bg-secondary hover:text-primary
-    transition-colors duration-500 md:drop-shadow-md active:drop-shadow-xl;
+    @apply py-1.5 font-bold border-2 border-quaternary rounded-md bg-quaternary text-primary transition-colors duration-500 hover:shadow-quaternary active:shadow-quaternary;
   }
 
   /* Post Form CSS classes */
@@ -164,6 +311,13 @@
   }
   .modal-close {
     opacity: 0;
+  }
+
+  .post-content p img {
+    width: 100%;
+    /* max-height: 350px; */
+    margin-top: 0;
+    margin-bottom: 0;
   }
 
   .create-post-form-container {
@@ -223,7 +377,7 @@
 
     #upload-image,
     .markdown-btn {
-      @apply py-1.5 px-2 border-2 rounded-md border-quaternary bg-quaternary text-secondary text-sm font-semibold;
+      @apply py-1.5 px-2 border rounded-md border-quaternary bg-secondary/35 text-quaternary text-sm font-semibold;
     }
 
     .errors input,
@@ -240,25 +394,27 @@
     }
   }
 
-  input[type="file"],
-  #upload-image {
-    @apply file:sm:py-1.5 file:sm:px-2 file:border-2 file:rounded-md file:border-quaternary file:bg-quaternary file:text-secondary file:text-sm file:font-semibold;
+  input[type="file"] {
+    @apply file:sm:py-1.5 file:sm:px-2 file:border file:rounded-md file:border-quaternary file:bg-secondary/35 file:text-quaternary file:text-sm file:font-semibold;
   }
 
   /* All posts card */
 
   /* Post details page */
   .post-tag-container {
-    @apply flex flex-row mt-3 space-x-2;
+    @apply flex flex-row flex-wrap mt-1 space-x-2;
   }
   .post-tag-container .tag {
-    @apply cursor-pointer rounded-full px-4 py-0.5 font-medium text-quaternary bg-secondary/35 hover:bg-secondary/45;
+    @apply cursor-pointer mt-2 rounded-full px-4 py-0.5 font-medium text-quaternary bg-secondary/35 hover:bg-secondary/45;
   }
   .post-edit-btn {
     @apply text-center border md:border-2 rounded-md border-quaternary text-quaternary text-sm font-medium px-3 md:px-4 py-1.5 hover:text-primary hover:bg-quaternary transition-colors duration-500;
   }
   .post-delete-btn {
     @apply text-center border md:border-2 rounded-md border-tertiary text-tertiary text-sm font-medium px-1.5 md:px-5 py-1.5 hover:text-primary hover:bg-tertiary transition-colors duration-500;
+  }
+  .post-content p img {
+    @apply h-64 sm:h-72 lg:h-96;
   }
 
   /* pagination */
@@ -277,5 +433,69 @@
   }
   .page-link-disabled {
     @apply flex items-center justify-center px-3 h-8 ms-0 leading-tight text-primary bg-secondary/50 border border-secondary;
+  }
+
+  #comment-section {
+    @apply flex flex-col pb-4;
+  }
+
+  #add-comment-form {
+    @apply flex flex-col space-y-2;
+  }
+
+  .reply-form {
+    @apply flex flex-col space-y-2;
+  }
+
+  #add-comment-form textarea,
+  .reply-form textarea {
+    @apply p-2 border rounded-lg focus:bg-primary text-sm sm:text-base;
+  }
+
+  #add-comment-form button {
+    @apply ms-auto flex items-center px-2 py-1 w-fit font-medium rounded-md border-quaternary bg-transparent 
+    text-quaternary hover:bg-quaternary hover:text-primary transition-colors ease-linear duration-300;
+  }
+
+  #spin-icon {
+    @apply animate-spin-icon leading-none font-semibold px-2;
+  }
+
+  .comment-content {
+    @apply border-b-2 border-transparent focus:outline-none focus-within:border-quaternary;
+  }
+
+  #load-more-comments,
+  .load-more-replies {
+    @apply py-2 mt-2 flex items-center justify-center rounded-lg hover:shadow-lg transition duration-500 font-medium bg-primary hover:bg-secondary hover:text-white;
+  }
+
+  .show-replies {
+    @apply flex items-center space-x-2;
+  }
+
+  .show-replies,
+  .reply,
+  .edit-comment,
+  .delete-comment,
+  .cancel-reply,
+  .cancel-save,
+  .save-comment,
+  .save-reply {
+    @apply px-3 rounded-full transition duration-300 font-medium;
+  }
+  .show-replies,
+  .reply,
+  .edit-comment {
+    @apply hover:bg-secondary/35;
+  }
+  .delete-comment,
+  .cancel-reply,
+  .cancel-save {
+    @apply hover:bg-red-500 hover:text-white;
+  }
+  .save-comment,
+  .save-reply {
+    @apply hover:bg-quaternary hover:text-white;
   }
 }

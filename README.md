@@ -11,11 +11,15 @@
 
 ## Tech Stack
 
-- Django Framework
+- Django
 
 - PostgrSQL Database
 
-- AWS S3
+- Redis cache
+
+- Google object storage
+
+- Google app engine
 
 ## Environment Variables
 

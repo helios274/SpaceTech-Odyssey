@@ -1,34 +1,59 @@
 $(document).ready(function () {
-  // function getCookie(name) {
-  //   let cookieValue = null;
-  //   if (document.cookie && document.cookie !== "") {
-  //     const cookies = document.cookie.split(";");
-  //     for (let i = 0; i < cookies.length; i++) {
-  //       const cookie = cookies[i].trim();
-  //       // Does this cookie string begin with the name we want?
-  //       if (cookie.substring(0, name.length + 1) === name + "=") {
-  //         cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-  //         break;
-  //       }
-  //     }
-  //   }
-  //   return cookieValue;
-  // }
+  var messageId = 0;
 
-  // const csrftoken = getCookie("csrftoken");
+  // toast message handler
+  function showToastMessage(messageString, type) {
+    messageId += 1;
+    const messageContainer = $("#messageContainer");
+    if (messageContainer.length) {
+      messageContainer.append(
+        `
+        <div class="message-body message-${
+          type === "error" ? "danger" : "success"
+        } message-enter" data-message-id="${messageId}">
+          <p>${messageString}</p>
+          <button type="button" class="message-close-btn" data-close-id="${messageId}">X</button>
+        </div>
+      `
+      );
+    } else {
+      $("body").prepend(
+        `
+        <div id="messageContainer">
+          <div class="message-body message-${
+            type === "error" ? "danger" : "success"
+          } message-enter" data-message-id="${messageId}">
+            <p>${messageString}</p>
+            <button type="button" class="message-close-btn" data-close-id="${messageId}">X</button>
+          </div>
+        </div>
+      `
+      );
+    }
+    function showMessage(message) {
+      message.addClass("message-enter-active");
+    }
 
-  // function csrfSafeMethod(method) {
-  //   // these HTTP methods do not require CSRF protection
-  //   return /^(GET|HEAD|OPTIONS|TRACE)$/.test(method);
-  // }
+    function hideMessage(message) {
+      message.addClass("message-exit-active");
+      setTimeout(function () {
+        message.remove();
+      }, 300);
+    }
 
-  // $.ajaxSetup({
-  //   beforeSend: function (xhr, settings) {
-  //     if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
-  //       xhr.setRequestHeader("X-CSRFToken", csrftoken);
-  //     }
-  //   },
-  // });
+    $("#messageContainer > div").each(function () {
+      var message = $(this);
+      setTimeout(function () {
+        hideMessage(message);
+      }, 3800);
+
+      message.find("button").on("click", function () {
+        hideMessage(message);
+      });
+
+      showMessage(message);
+    });
+  }
 
   // Model configuration
   var $modal = $("#modal");
@@ -54,7 +79,6 @@ $(document).ready(function () {
   });
 
   // Search or create tags configuration
-
   let selectedTags = [];
 
   $("#tag-search").on("input", function () {
@@ -96,7 +120,6 @@ $(document).ready(function () {
         method: "POST",
         data: {
           name: tagName,
-          // csrfmiddlewaretoken: csrftoken,
         },
         beforeSend: function (xhr) {
           xhr.setRequestHeader(
@@ -113,11 +136,13 @@ $(document).ready(function () {
         },
       });
     } else {
-      selectedTags.push(tagName);
-      $("#selected-tags").append(
-        `<div class="tag">${tagName}<span class="remove-tag" data-name="${tagName}">&times;</span></div>`
-      );
-      updateTagsInput();
+      if (!selectedTags.includes(tagName)) {
+        selectedTags.push(tagName);
+        $("#selected-tags").append(
+          `<div class="tag">${tagName}<span class="remove-tag" data-name="${tagName}">&times;</span></div>`
+        );
+        updateTagsInput();
+      }
     }
     $("#tag-search").val("");
     $("#tag-suggestions").empty().hide();
@@ -142,18 +167,18 @@ $(document).ready(function () {
 
   // Blog image upload to cloudinary
   $("#upload-image").click(function () {
+    const uploadLoader = $("#upload-loader");
     var fileInput = $(
       '<input type="file" accept="image/*" style="display: none;">'
     );
     fileInput.on("change", function (e) {
       var file = e.target.files[0];
-
-      // Upload image to Django view using AJAX
       var formData = new FormData();
       formData.append("image", file);
+      uploadLoader.fadeIn();
 
       $.ajax({
-        url: "/posts/create-post/upload/post_cover", // Use URL template tag
+        url: "/posts/create-post/upload/post_cover",
         type: "POST",
         data: formData,
         processData: false,
@@ -169,26 +194,43 @@ $(document).ready(function () {
             var imageUrl = response.url;
             var contentTextarea = $("#id_content");
             var cursorPos = contentTextarea.prop("selectionStart");
+            var scrollPos = contentTextarea.scrollTop();
             var content = contentTextarea.val();
+            var markdownSyntax = `![image description](${imageUrl})`;
             var newContent =
               content.substring(0, cursorPos) +
-              `![image description](${imageUrl})${content.substring(
-                cursorPos
-              )}`;
+              markdownSyntax +
+              content.substring(cursorPos);
+
             contentTextarea.val(newContent);
+
+            var newCursorPos = cursorPos + markdownSyntax.length;
+
             contentTextarea.focus();
+            contentTextarea[0].setSelectionRange(newCursorPos, newCursorPos);
+
+            contentTextarea.scrollTop(scrollPos);
+
             $("#image_url").val(imageUrl);
+            showToastMessage("Image uploaded", "success");
           } else {
-            console.error("Error uploading image:", response.error);
-            // Handle upload errors (optional)
+            showToastMessage("Error uploading image", "error");
           }
         },
         error: function (err) {
-          console.error("Error:", err);
-          // Handle AJAX errors (optional)
+          showToastMessage("Error uploading image", "error");
+        },
+        complete: function (xhr, status) {
+          uploadLoader.fadeOut();
         },
       });
     });
     fileInput.click();
+  });
+
+  const submitLoader = '<div class="submit-loader ms-2"></div>';
+
+  $("#post-form").on("submit", function () {
+    $(".submit-btn").text("Publishing").append(submitLoader);
   });
 });

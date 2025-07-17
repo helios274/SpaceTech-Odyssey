@@ -1,40 +1,41 @@
 import os
 from pathlib import Path
+import environ
 from django.contrib import messages
-from environ import Env
-from google.oauth2 import service_account
-import dj_database_url
-import cloudinary.uploader
 import cloudinary
 
-env = Env(
+# Base directory for the project
+BASE_DIR = Path(__file__).resolve().parent.parent.parent
+
+
+# Environment variable helper
+env = environ.Env(
     DEBUG=(bool, False),
     CLOUDINARY_SECURE=(bool, True),
 )
 
-BASE_DIR = Path(__file__).resolve().parent.parent
+# Load environment variables from .env-prod file
+env.read_env(BASE_DIR / '.env-prod')
 
-Env.read_env(BASE_DIR / '.env')  # Get environment variables from .env file
-
+# Core settings
 SECRET_KEY = env('SECRET_KEY')
 
-DEBUG = env('DEBUG')
-
-ALLOWED_HOSTS = list(
-    env.list('ALLOWED_HOSTS', default=['127.0.0.1'])
-)
-
-
+# Application definition
 INSTALLED_APPS = [
+    # Third‑party
     'django_browser_reload',
     'debug_toolbar',
     'compressor',
+
+    # Django
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+
+    # Local
     'blog',
     'account',
 ]
@@ -52,6 +53,7 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = 'my_site.urls'
+WSGI_APPLICATION = 'my_site.wsgi.application'
 
 TEMPLATES = [
     {
@@ -69,91 +71,55 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'my_site.wsgi.app'
-
+# Database
 DATABASES = {
-    'default': dj_database_url.parse(env('DB_URI'))
+    'default': env.db_url('DB_URI')
 }
 
+# Caches
+CACHES = {
+    'default': env.cache_url('REDIS_SERVER_URI', backend='django_redis.cache.RedisCache')
+}
+
+
+# Password validation
 AUTH_PASSWORD_VALIDATORS = [
-    {
-        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
-    },
+    {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator'},
+    {'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator'},
+    {'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator'},
+    {'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator'},
 ]
 
+# Internationalization
 LANGUAGE_CODE = 'en-us'
-
-TIME_ZONE = 'UTC'
-
+TIME_ZONE = 'Asia/Kolkata'
 USE_I18N = True
-
 USE_TZ = True
 
-
-if DEBUG:
-    INTERNAL_IPS = [
-        "127.0.0.1",
-    ]
-    STATIC_ROOT = BASE_DIR / 'static'
-    STATIC_URL = '/static/'
-
-else:
-    SESSION_COOKIE_SECURE = True
-    CSRF_COOKIE_SECURE = True
-
-    STATICFILES_DIRS = [
-        BASE_DIR / 'static'
-    ]
-
-    # Google cloud storage settings
-    GS_CREDENTIALS = service_account.Credentials.from_service_account_file(
-        os.path.join(BASE_DIR, 'sto-admin-sa.json')
-    )
-    GS_PROJECT_ID = env('GS_PROJECT_ID')
-    GS_BUCKET_NAME = env('GS_BUCKET_NAME')
-
-    STATICFILES_STORAGE = 'custom_storages.StaticStorage'
-    STATIC_URL = f'https://storage.googleapis.com/{GS_BUCKET_NAME}/static/'
-
-
-COMPRESS_ROOT = BASE_DIR / 'static'  # django-compressor
-
-COMPRESS_ENABLED = True  # django-compressor
-
-# django-compressor
+# Static files
+STATIC_URL = '/static/'
 STATICFILES_FINDERS = [
     'django.contrib.staticfiles.finders.FileSystemFinder',
     'django.contrib.staticfiles.finders.AppDirectoriesFinder',
     'compressor.finders.CompressorFinder',
 ]
 
+# Message tags
+MESSAGE_TAGS = {messages.ERROR: 'danger'}
 
-MESSAGE_TAGS = {
-    messages.ERROR: "danger"
-}
-
-DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-
+# Custom user & auth
 AUTHENTICATION_BACKENDS = ['account.backends.EmailBackend']
-
 AUTH_USER_MODEL = 'account.User'
-
 LOGIN_URL = '/auth/login'
 
+# Cloudinary configuration
 cloudinary.config(
     cloud_name=env('CLOUDINARY_CLOUD_NAME'),
     api_key=env('CLOUDINARY_API_KEY'),
     api_secret=env('CLOUDINARY_API_SECRET'),
-    secure=env('CLOUDINARY_SECURE')
+    secure=env('CLOUDINARY_SECURE'),
 )
-
 CLOUDINARY_ROOT_FOLDER = env('CLOUDINARY_ROOT_FOLDER')
+
+# Default primary key
+DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
